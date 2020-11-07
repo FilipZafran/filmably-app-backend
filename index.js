@@ -13,6 +13,8 @@ const app = express();
 
 //-------------------End of Imports----------------------------
 
+//the MONGO_USER and MONGO_PW are listed in our excel spreadsheet
+
 mongoose.connect(
   `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PW}@filmably.awjtp.mongodb.net/filmably?retryWrites=true&w=majority`,
   { useNewUrlParser: true, useUnifiedTopology: true },
@@ -31,6 +33,9 @@ app.use(
     credentials: true,
   })
 );
+
+//to my understanding we need to use the session secret to decrypt our hashed passwords
+//I put this in the excel spreadsheet as well
 
 app.use(
   session({

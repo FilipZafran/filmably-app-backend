@@ -33,6 +33,11 @@ router.post("/register", (req, res) => {
       res.send("User Created");
     }
   });
+
+  //the login and register routes are working well
+  //I am less clear on how this route works but I will try to work on it more tomorrow
+  //I think it is worth merging so that some of our authentication is working
+  //I will work on this route that allows access to the user object
   router.get("/user", (req, res) => {
     res.send(req.user);
   });
