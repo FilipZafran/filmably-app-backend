@@ -1,20 +1,23 @@
-const mongoose = require('mongoose');
-const cors = require('cors');
-const passport = require('passport');
-const passportLocal = require('passport-local').Strategy;
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const User = require('./models/user');
+const mongoose = require("mongoose");
+const cors = require("cors");
+const passport = require("passport");
+const passportLocal = require("passport-local").Strategy;
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const User = require("./models/user");
+const express = require("express");
 
-const express = require('express');
+const dotenv = require("dotenv");
+dotenv.config();
+
 const PORT = process.env.PORT || 5000;
 const app = express();
 
 //-------------------End of Imports----------------------------
 
 //the MONGO_USER and MONGO_PW NEED TO BE CHANGED FOR PRODUCTION
-const MONGO_USER = "Admin";
-const MONGO_PW = "WEL0VEm0v135";
+const MONGO_USER = process.env.MONGOUSER;
+const MONGO_PW = process.env.MONGOPW;
 
 mongoose.connect(
   `mongodb+srv://${MONGO_USER}:${MONGO_PW}@filmably.awjtp.mongodb.net/filmably?retryWrites=true&w=majority`,
@@ -34,7 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(
   cors({
-    origin: 'http://localhost:3000', //<----- create-react-app defaults to localhost:3000
+    origin: "http://localhost:3000", //<----- create-react-app defaults to localhost:3000
     credentials: true,
   })
 );
@@ -43,7 +46,7 @@ app.use(
 //I put this in the excel spreadsheet as well
 
 //THIS SESSION SECRET WILL BE CHANGED FOR PRODUCTION
-const SESSION_SECRET = "superSecretCode";
+const SESSION_SECRET = process.env.SESSIONSECRET;
 
 app.use(
   session({
@@ -56,19 +59,19 @@ app.use(
 app.use(cookieParser(SESSION_SECRET));
 app.use(passport.initialize());
 app.use(passport.session());
-require('./passportConfig')(passport);
+require("./passportConfig")(passport);
 
 //-------------End of Middleware ---------------------------
 //ROUTES
 
-app.use('/authenticate', require('./routes/users'));
+app.use("/authenticate", require("./routes/users"));
 
 //-----------End of Routes ---------------------------------
 
 //I'n not entirely sure if this is the correct way to disconnect from our database
-process.on('SIGNINT', () => {
+process.on("SIGNINT", () => {
   mongoose.connection.close(() => {
-    console.log('Mongoose disconnected');
+    console.log("Mongoose disconnected");
     process.exit(0);
   });
 });
