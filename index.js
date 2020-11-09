@@ -13,13 +13,19 @@ const app = express();
 
 //-------------------End of Imports----------------------------
 
-//the MONGO_USER and MONGO_PW are listed in our excel spreadsheet
+//the MONGO_USER and MONGO_PW NEED TO BE CHANGED FOR PRODUCTION
+const MONGO_USER = "Admin";
+const MONGO_PW = "WEL0VEm0v135";
 
 mongoose.connect(
-  `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PW}@filmably.awjtp.mongodb.net/filmably?retryWrites=true&w=majority`,
+  `mongodb+srv://${MONGO_USER}:${MONGO_PW}@filmably.awjtp.mongodb.net/filmably?retryWrites=true&w=majority`,
   { useNewUrlParser: true, useUnifiedTopology: true },
-  () => {
-    console.log(`${process.env.MONGO_USER} Connected To Mongoose`);
+  (err, client) => {
+    if (err) {
+      console.log("Databse err: " + err);
+    } else {
+      console.log(`${MONGO_USER} Connected To Mongoose`);
+    }
   }
 );
 
@@ -37,15 +43,18 @@ app.use(
 //to my understanding we need to use the session secret to decrypt our hashed passwords
 //I put this in the excel spreadsheet as well
 
+//THIS SESSION SECRET WILL BE CHANGED FOR PRODUCTION
+const SESSION_SECRET = "superSecretCode";
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
   })
 );
 
-app.use(cookieParser(process.env.SESSION_SECRET));
+app.use(cookieParser(SESSION_SECRET));
 app.use(passport.initialize());
 app.use(passport.session());
 require("./passportConfig")(passport);
