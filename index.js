@@ -1,13 +1,13 @@
-const mongoose = require("mongoose");
-const cors = require("cors");
-const passport = require("passport");
-const passportLocal = require("passport-local").Strategy;
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
-const User = require("./models/user");
-const express = require("express");
+const mongoose = require('mongoose');
+const cors = require('cors');
+const passport = require('passport');
+const passportLocal = require('passport-local').Strategy;
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const User = require('./models/user');
+const express = require('express');
 
-const dotenv = require("dotenv");
+const dotenv = require('dotenv');
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
@@ -24,7 +24,7 @@ mongoose.connect(
   { useNewUrlParser: true, useUnifiedTopology: true },
   (err, client) => {
     if (err) {
-      console.log("Databse err: " + err);
+      console.log('Databse err: ' + err);
     } else {
       console.log(`${MONGO_USER} Connected To Mongoose`);
     }
@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(
   cors({
-    origin: "http://localhost:3000", //<----- create-react-app defaults to localhost:3000
+    origin: ['http://localhost:3000', 'https://filmably.netlify.app'], //<----- create-react-app defaults to localhost:3000
     credentials: true,
   })
 );
@@ -59,19 +59,19 @@ app.use(
 app.use(cookieParser(SESSION_SECRET));
 app.use(passport.initialize());
 app.use(passport.session());
-require("./passportConfig")(passport);
+require('./passportConfig')(passport);
 
 //-------------End of Middleware ---------------------------
 //ROUTES
 
-app.use("/authenticate", require("./routes/users"));
+app.use('/authenticate', require('./routes/users'));
 
 //-----------End of Routes ---------------------------------
 
 //I'n not entirely sure if this is the correct way to disconnect from our database
-process.on("SIGNINT", () => {
+process.on('SIGNINT', () => {
   mongoose.connection.close(() => {
-    console.log("Mongoose disconnected");
+    console.log('Mongoose disconnected');
     process.exit(0);
   });
 });
