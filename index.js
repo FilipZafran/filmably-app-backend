@@ -5,6 +5,7 @@ const passportLocal = require('passport-local').Strategy;
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const User = require('./models/user');
+const LikeTracker = require('./models/likeTracker');
 const express = require('express');
 
 const dotenv = require('dotenv');
@@ -65,6 +66,7 @@ require('./passportConfig')(passport);
 //ROUTES
 
 app.use('/authenticate', require('./routes/users'));
+app.use('/likeTracker', require('./routes/likes'));
 
 //-----------End of Routes ---------------------------------
 
