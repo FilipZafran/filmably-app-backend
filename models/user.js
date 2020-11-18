@@ -15,10 +15,8 @@ const user = new Schema({
     type: String,
     required: true,
   },
-  // fields: { type: [String], index: true }
 
 });
 
-// user.index({ username: "text" })
 
 module.exports = mongoose.model('User', user);
