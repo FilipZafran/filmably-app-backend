@@ -6,7 +6,6 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const User = require('./models/user');
 const express = require('express');
-
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -34,6 +33,8 @@ mongoose.connect(
 //MIDDLEWARE <------ if you think we should put middleware in a seperate foulder that is fine with me
 
 app.use(express.json());
+app.use(express.static("Users/edith/Desktop/movie-tinder-app/public"))
+
 app.use(express.urlencoded({ extended: false }));
 app.use(
   cors({
@@ -61,11 +62,23 @@ app.use(passport.initialize());
 app.use(passport.session());
 require('./passportConfig')(passport);
 
+
+// const cookieSession = require("express-session");
+
+// const cookieSessionMiddleware = cookieSession({
+//   secret: "I am a cookie",
+//   originalMaxAge: 1000 * 60 * 60 * 24 * 14
+// });
+
+// app.use(cookieSessionMiddleware);
+
+
+
 //-------------End of Middleware ---------------------------
 //ROUTES
 
 app.use('/authenticate', require('./routes/users'));
-
+// app.use('/Friends', require('./routes/Friends'))
 //-----------End of Routes ---------------------------------
 
 //I'n not entirely sure if this is the correct way to disconnect from our database
@@ -75,5 +88,19 @@ process.on('SIGNINT', () => {
     process.exit(0);
   });
 });
+
+// app.get("*", function (req, res) {
+//   console.log("something in route star")
+//   console.log("req.session", req.sessionID)
+//   if (req.sessionID) {
+//     // console.log(__dirname)
+//     console.log(res.redirect("http://localhost:5000/dashboard"))
+//     // res.sendFile("/Users/edith/Desktop/movie-tinder-app/public/index.html");
+//   } else {
+//     res.redirect("/Welcome");
+//   }
+// });
+
+
 
 app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
