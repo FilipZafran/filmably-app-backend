@@ -7,7 +7,6 @@ const session = require('express-session');
 const User = require('./models/user');
 const LikeTracker = require('./models/likeTracker');
 const express = require('express');
-
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -35,6 +34,7 @@ mongoose.connect(
 //MIDDLEWARE <------ if you think we should put middleware in a seperate foulder that is fine with me
 
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: false }));
 app.use(
   cors({
@@ -77,5 +77,9 @@ process.on('SIGNINT', () => {
     process.exit(0);
   });
 });
+
+
+
+
 
 app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));

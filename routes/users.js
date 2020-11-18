@@ -53,4 +53,42 @@ router.get('/logout', (req, res) => {
   res.send('User Logged Out');
 });
 
+
+//----------LOADING FRIEND ROUTE----------
+
+router.get('/Friends/users.json', (req, res) => {
+
+  User.find({}, function (err, users) {
+    try {
+      if (err) throw err;
+
+      if (users) {
+        let loadsThreeLast = users.splice(users.length - 3, users.length - 1)
+        res.send(loadsThreeLast)
+      }
+    } catch (err) {
+      console.error("there was an error in users.json", error)
+    }
+  })
+
+})
+
+
+//----------SEARCH FRIENDS ROUTE----------
+router.get("/Friends/FindPeople/:searchPeople", (req, res) => {
+  let search = req.params.searchPeople;
+  User.find({ $text: { $search: search } }, async (err, rs) => {
+    try {
+      if (err) throw err;
+      if (rs) {
+        res.send(rs)
+      }
+    } catch (err) {
+      console.error("there is an error in search", err)
+    }
+  })
+})
+
+
+
 module.exports = router;
