@@ -7,7 +7,7 @@ const passport = require('passport');
 //----------AUTHENTICATE ROUTER-----------------------
 
 router.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+  passport.authenticate('local', (err, user) => {
     if (err) throw err;
     if (!user) res.send({ message: 'No User Exists' });
     else {
@@ -15,9 +15,9 @@ router.post('/login', (req, res, next) => {
         if (err) throw err;
         res.send({
           message: 'Successfully Authenticated',
-          user: { username: req.user.username, _id: req.user._id },
+          user: { username: req.user.username },
         });
-        console.log(req.user);
+        console.log(req.user.username + ' logged in');
       });
     }
   })(req, res, next);
@@ -49,46 +49,41 @@ router.get('/user', (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
+  res.send(req.user.username + ' Logged Out');
+  console.log(req.user.username + ' Logged out');
   req.logout();
-  res.send('User Logged Out');
 });
-
 
 //----------LOADING FRIEND ROUTE----------
 
 router.get('/Friends/users.json', (req, res) => {
-
   User.find({}, function (err, users) {
     try {
       if (err) throw err;
 
       if (users) {
-        let loadsThreeLast = users.splice(users.length - 3, users.length - 1)
-        res.send(loadsThreeLast)
+        let loadsThreeLast = users.splice(users.length - 3, users.length - 1);
+        res.send(loadsThreeLast);
       }
     } catch (err) {
-      console.error("there was an error in users.json", error)
+      console.error('there was an error in users.json', error);
     }
-  })
-
-})
-
+  });
+});
 
 //----------SEARCH FRIENDS ROUTE----------
-router.get("/Friends/FindPeople/:searchPeople", (req, res) => {
+router.get('/Friends/FindPeople/:searchPeople', (req, res) => {
   let search = req.params.searchPeople;
   User.find({ $text: { $search: search } }, async (err, rs) => {
     try {
       if (err) throw err;
       if (rs) {
-        res.send(rs)
+        res.send(rs);
       }
     } catch (err) {
-      console.error("there is an error in search", err)
+      console.error('there is an error in search', err);
     }
-  })
-})
-
-
+  });
+});
 
 module.exports = router;
