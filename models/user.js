@@ -26,7 +26,7 @@ const user = new Schema({
   data: {
     type: Object,
     required: true,
-    default: { age: '' },
+    default: { email: '' },
   },
 });
 
