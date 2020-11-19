@@ -23,6 +23,11 @@ const user = new Schema({
   lastLoggedIn: {
     type: Date,
   },
+  data: {
+    type: Object,
+    required: true,
+    default: { age: '' },
+  },
 });
 
 module.exports = mongoose.model('User', user);
