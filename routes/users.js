@@ -17,7 +17,7 @@ router.post('/login', (req, res, next) => {
           message: 'Successfully Authenticated',
           user: { username: req.user.username, _id: req.user._id },
         });
-        console.log(req.user);
+        // console.log(req.user);
       });
     }
   })(req, res, next);
@@ -56,7 +56,7 @@ router.get('/logout', (req, res) => {
 
 //----------LOADING FRIEND ROUTE----------
 
-router.get('/Friends/users.json', (req, res) => {
+router.get('/users.json', (req, res) => {
 
   User.find({}, function (err, users) {
     try {
@@ -75,7 +75,7 @@ router.get('/Friends/users.json', (req, res) => {
 
 
 //----------SEARCH FRIENDS ROUTE----------
-router.get("/Friends/FindPeople/:searchPeople", (req, res) => {
+router.get("/FindPeople/:searchPeople", (req, res) => {
   let search = req.params.searchPeople;
   User.find({ $text: { $search: search } }, async (err, rs) => {
     try {
