@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-mongoose.set('useCreateIndex', true)
+mongoose.set('useCreateIndex', true);
 
 const Schema = mongoose.Schema;
 
@@ -9,14 +9,25 @@ const user = new Schema({
   username: {
     type: String,
     required: true,
-    index: true
+    index: true,
   },
   password: {
     type: String,
     required: true,
   },
-
+  registeredAt: {
+    type: Date,
+    required: true,
+    default: new Date(),
+  },
+  lastLoggedIn: {
+    type: Date,
+  },
+  data: {
+    type: Object,
+    required: true,
+    default: { email: '' },
+  },
 });
-
 
 module.exports = mongoose.model('User', user);
