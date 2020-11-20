@@ -89,6 +89,19 @@ router.get("/Friends/FindPeople/:searchPeople", (req, res) => {
   })
 })
 
+//----------OTHER PROFILE DISPLAY ROUTE----------
+router.get("/OtherProfile/:id.json", (req, res) => {
+  User.findOne({ _id: req.params.id }, async (err, rs) => {
+    try {
+      if (err) throw err
+      if (rs) {
+        res.send(rs)
+      }
+    } catch (err) {
+      console.error("there is an error in displaying otherProfile", err)
+    }
+  })
+})
 
 
 module.exports = router;
