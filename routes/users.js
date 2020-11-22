@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require('../models/user');
 const passport = require('passport');
 
+
 //----------AUTHENTICATE ROUTER-----------------------
 
 router.post('/login', (req, res, next) => {
@@ -76,7 +77,10 @@ router.get('/users.json', (req, res) => {
 
 //----------SEARCH FRIENDS ROUTE----------
 router.get("/FindPeople/:searchPeople", (req, res) => {
+  console.log("made it to route findpeople")
   let search = req.params.searchPeople;
+  console.log("search", search)
+  // User.index({ username: 'text' });
   User.find({ $text: { $search: search } }, async (err, rs) => {
     try {
       if (err) throw err;
@@ -92,6 +96,7 @@ router.get("/FindPeople/:searchPeople", (req, res) => {
 //----------OTHER PROFILE DISPLAY ROUTE----------
 router.get("/OtherProfile/:id.json", (req, res) => {
   User.findOne({ _id: req.params.id }, async (err, rs) => {
+    // console.log("rs in other profile", rs)
     try {
       if (err) throw err
       if (rs) {

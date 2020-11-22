@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-mongoose.set('useCreateIndex', true)
 
 const Schema = mongoose.Schema;
 
@@ -15,8 +14,22 @@ const user = new Schema({
     type: String,
     required: true,
   },
+  registeredAt: {
+    type: Date,
+    required: true,
+    default: new Date(),
+  },
+  lastLoggedIn: {
+    type: Date,
+  },
+  data: {
+    type: Object,
+    required: true,
+    default: { email: '' },
+  },
 
 });
-
+mongoose.set('useCreateIndex', true)
+user.index({ username: 'text' })
 
 module.exports = mongoose.model('User', user);

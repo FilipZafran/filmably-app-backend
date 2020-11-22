@@ -6,13 +6,7 @@ const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 //need to add ensureauth
 //------------TESTING ROUTE---------//
 router.get("/getFriendsStatus/:otherUserId", ensureAuthenticated, (req, res) => {
-    // console.log("made it to req friends route", req)
-    // let senderID = req.sessionID
-    // let receiverID = req.params.otherUserId
-    // console.log(senderID)
-    // console.log(receiverID)
-    console.log("sesion in check status", req.user)
-    Friends.find({ senderUserId: req.sessionID }, { receiverUserId: req.params.otherUserId }, async (err, rs) => {
+    Friends.find({ senderUserId: req.user.id }, { receiverUserId: req.params.otherUserId }, async (err, rs) => {
         try {
             if (err) throw err
             if (rs.length === 0) {
@@ -27,7 +21,8 @@ router.get("/getFriendsStatus/:otherUserId", ensureAuthenticated, (req, res) => 
                         unfriend: true
                     })
                 } else if (rs.rows[0].accepted === false) {
-                    if (rs.rows[0].receiverUserId == req.sessionID) {
+                    if (rs.rows[0].receiverUserId == req.user.id) {
+                        console.log("res in accept friends", res)
                         res.send({
                             data: true,
                             acceptFriendReq: true
@@ -50,11 +45,9 @@ router.get("/getFriendsStatus/:otherUserId", ensureAuthenticated, (req, res) => 
 
 
 router.post("/makeFriendRequest/:otherUserId", ensureAuthenticated, (req, res) => {
-    // console.log("senderUserId: in otherUser ", req.user.id)
-
     Friends.create(
         {
-            senderUserId: req.sessionID,
+            senderUserId: req.user.id,
             receiverUserId: req.params.otherUserId
         },
         async (err, rs) => {
@@ -77,18 +70,14 @@ router.post("/makeFriendRequest/:otherUserId", ensureAuthenticated, (req, res) =
 
 
 router.post('/unfriend/:otherUserId', ensureAuthenticated, (req, res) => {
-    console.log("made it to route reject friends")
-    console.log("senderUserId in unfriend: ", req.user)
-    //should be deleted here
     Friends.findOneAndDelete(
-        { senderUserId: req.sessionID },
+        { senderUserId: req.user.id },
         { receiverUserId: req.params.otherUserId },
         (err, rs) => {
             try {
                 if (err) throw err
                 if (rs) {
                     res.send({ data: true })
-                    console.log("has been deleted")
                 }
             } catch (err) {
                 console.error("error in unfriend route", err)
@@ -101,7 +90,7 @@ router.post('/unfriend/:otherUserId', ensureAuthenticated, (req, res) => {
 router.post('/acceptFriendRequest/:otherUserId', ensureAuthenticated, (req, res) => {
     console.log("made it to route accept friends")
     Friends.findOne({},
-        { senderUserId: req.sessionID },
+        { senderUserId: req.user.id },
         { receiverUserId: req.params.otherUserId },
         (err, rs) => {
             try {
