@@ -79,4 +79,45 @@ router.get('/dislikes', ensureAuthenticated, (req, res) => {
   });
 });
 
+router.delete('/likes', ensureAuthenticated, (req, res) => {
+  LikeTracker.findOneAndUpdate(
+    { userId: req.user.id },
+    {
+      $pull: {
+        likes: { film: { id: { $in: req.body.filmIds } } },
+      },
+    },
+    { useFindAndModify: false },
+    async (err, doc) => {
+      try {
+        if (err) throw err;
+        if (doc) res.send(doc);
+        if (!doc) res.send(`entry not found`);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  );
+});
+
+router.delete('/dislikes', ensureAuthenticated, (req, res) => {
+  LikeTracker.findOneAndUpdate(
+    { userId: req.user.id },
+    { $pull: { dislikes: { film: { id: { $in: req.body.filmIds } } } } },
+    { useFindAndModify: false },
+    async (err, doc) => {
+      try {
+        if (err) throw err;
+        if (doc) res.send(`removed from dislikes`);
+        if (!doc) res.send(`entry not found`);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  );
+});
+
+//{"filmIds": ["tt1130884", "tt4729430","tt0035446"]}
+//{"username":"Admin", "password":"password"}
+
 module.exports = router;
