@@ -66,8 +66,9 @@ require('./passportConfig')(passport);
 //-------------End of Middleware ---------------------------
 //ROUTES
 
-app.use('/authenticate', require('./routes/users'));
-app.use('/likeTracker', require('./routes/likes'));
+app.use('/authenticate', require('./routes/authenticate'));
+app.use('/profiles', require('./routes/profiles'));
+app.use('/likeTracker', require('./routes/likeTracker'));
 app.use('/friends', require('./routes/friends'))
 
 //-----------End of Routes ---------------------------------

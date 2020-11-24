@@ -9,7 +9,7 @@ router.get("/getFriendsStatus/:otherUserId", ensureAuthenticated, (req, res) => 
     console.log("made it to route get friends")
     console.log("sender", req.user.id)
     console.log("receiver", req.params.otherUserId)
-    Friends.find({ senderUserId: req.user.id, receiverUserId: req.params.otherUserId }, async (err, rs) => {
+    Friends.find({ $or: [{ senderUserId: req.user.id, receiverUserId: req.params.otherUserId }, { senderUserId: req.params.otherUserId, receiverUserId: req.user.id }] }, async (err, rs) => {
         try {
             console.log("rs", rs)
             let results = rs;
@@ -106,15 +106,17 @@ router.post('/acceptFriendRequest/:otherUserId', ensureAuthenticated, (req, res)
     console.log("made it to route accept friends")
     Friends.updateOne(
         {
-            senderUserId: req.user.id
-            , receiverUserId: req.params.otherUserId
+            senderUserId: req.user.id,
+            receiverUserId: req.params.otherUserId,
+            accepted: true
         },
-        { accepted: true },
+
         (err, rs) => {
             console.log("rs in addFriends", rs)
             try {
                 if (err) throw err
                 if (rs) {
+                    res.send({ accepted: true })
 
                 }
 
