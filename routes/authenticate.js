@@ -9,7 +9,7 @@ const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 //----------AUTHENTICATE ROUTER-----------------------
 
 router.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+  passport.authenticate('local', (err, user) => {
     if (err) throw err;
     if (!user) res.send({ message: 'No User Exists' });
     else {
@@ -17,9 +17,9 @@ router.post('/login', (req, res, next) => {
         if (err) throw err;
         res.send({
           message: 'Successfully Authenticated',
-          user: { username: req.user.username, _id: req.user._id },
+          user: { username: req.user.username },
         });
-        // console.log(req.user);
+        console.log(req.user.username + ' logged in');
       });
     }
   })(req, res, next);
@@ -51,12 +51,10 @@ router.get('/user', (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
+  res.send(req.user.username + ' Logged Out');
+  console.log(req.user.username + ' Logged out');
   req.logout();
-  res.send('User Logged Out');
 });
-
-
-
 
 
 module.exports = router;
