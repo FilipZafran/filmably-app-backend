@@ -80,18 +80,17 @@ router.get('/dislikes', ensureAuthenticated, (req, res) => {
 });
 
 router.delete('/likes', ensureAuthenticated, (req, res) => {
-  LikeTracker.findOneAndUpdate(
+  LikeTracker.update(
     { userId: req.user.id },
     {
       $pull: {
-        likes: { film: { id: { $in: req.body.filmIds } } },
+        likes: { film: { id: req.body.filmIds } },
       },
     },
-    { useFindAndModify: false },
     async (err, doc) => {
       try {
         if (err) throw err;
-        if (doc) res.send(doc);
+        if (doc) res.send('entry pulled');
         if (!doc) res.send(`entry not found`);
       } catch (err) {
         console.log(err);
@@ -103,7 +102,7 @@ router.delete('/likes', ensureAuthenticated, (req, res) => {
 router.delete('/dislikes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOneAndUpdate(
     { userId: req.user.id },
-    { $pull: { dislikes: { film: { id: { $in: req.body.filmIds } } } } },
+    { $pull: { dislikes: { film: { id: { $in: req.body.filmId } } } } },
     { useFindAndModify: false },
     async (err, doc) => {
       try {
