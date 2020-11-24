@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const User = require('./models/user');
 const LikeTracker = require('./models/likeTracker');
+const Friends = require('./models/friends');
 const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -66,7 +67,9 @@ require('./passportConfig')(passport);
 //ROUTES
 
 app.use('/authenticate', require('./routes/authenticate'));
+app.use('/profiles', require('./routes/profiles'));
 app.use('/likeTracker', require('./routes/likeTracker'));
+app.use('/friends', require('./routes/friends'));
 
 //-----------End of Routes ---------------------------------
 
