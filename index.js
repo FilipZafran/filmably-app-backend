@@ -65,8 +65,8 @@ require('./passportConfig')(passport);
 //-------------End of Middleware ---------------------------
 //ROUTES
 
-app.use('/authenticate', require('./routes/users'));
-app.use('/likeTracker', require('./routes/likes'));
+app.use('/authenticate', require('./routes/authenticate'));
+app.use('/likeTracker', require('./routes/likeTracker'));
 
 //-----------End of Routes ---------------------------------
 
@@ -77,9 +77,5 @@ process.on('SIGNINT', () => {
     process.exit(0);
   });
 });
-
-
-
-
 
 app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
