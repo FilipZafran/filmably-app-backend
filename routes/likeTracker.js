@@ -8,7 +8,11 @@ const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 router.put('/like', ensureAuthenticated, (req, res) => {
   LikeTracker.findOneAndUpdate(
     { userId: req.user.id },
-    { $push: { likes: { date: new Date(), film: req.body.film } } },
+    {
+      $push: {
+        likes: { date: new Date(), film: req.body.film },
+      },
+    },
     { useFindAndModify: false },
     async (err, doc) => {
       try {
@@ -33,7 +37,11 @@ router.put('/like', ensureAuthenticated, (req, res) => {
 router.put('/dislike', ensureAuthenticated, (req, res) => {
   LikeTracker.findOneAndUpdate(
     { userId: req.user.id },
-    { $push: { dislikes: { date: new Date(), film: req.body.film } } },
+    {
+      $push: {
+        dislikes: { date: new Date(), film: req.body.film },
+      },
+    },
     { useFindAndModify: false },
     async (err, doc) => {
       try {
@@ -59,7 +67,12 @@ router.get('/likes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
     try {
       if (err) throw err;
-      if (doc) res.send({ likes: doc['likes'] });
+      if (doc) {
+        const likesArray = doc['likes'].sort(
+          (a, b) => Date.parse(b.date) - Date.parse(a.date)
+        );
+        res.send({ likes: likesArray });
+      }
       if (!doc) res.send({ likes: [] });
     } catch (err) {
       console.log(err);
@@ -71,7 +84,12 @@ router.get('/dislikes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
     try {
       if (err) throw err;
-      if (doc) res.send({ dislikes: doc['dislikes'] });
+      if (doc) {
+        const dislikesArray = doc['dislikes'].sort(
+          (a, b) => Date.parse(b.date) - Date.parse(a.date)
+        );
+        res.send({ dislikes: dislikesArray });
+      }
       if (!doc) res.send({ dislikes: [] });
     } catch (err) {
       console.log(err);
@@ -80,29 +98,21 @@ router.get('/dislikes', ensureAuthenticated, (req, res) => {
 });
 
 router.delete('/likes', ensureAuthenticated, (req, res) => {
-  LikeTracker.update(
-    { userId: req.user.id },
-    {
-      $pull: {
-        likes: { film: { id: req.body.filmIds } },
-      },
-    },
-    async (err, doc) => {
-      try {
-        if (err) throw err;
-        if (doc) res.send('entry pulled');
-        if (!doc) res.send(`entry not found`);
-      } catch (err) {
-        console.log(err);
-      }
+  LikeTracker.updateOne({ userId: req.user.id }, async (err, doc) => {
+    try {
+      if (err) throw err;
+      if (doc) res.send('removed first');
+      if (!doc) res.send(`entry not found`);
+    } catch (err) {
+      console.log(err);
     }
-  );
+  });
 });
 
 router.delete('/dislikes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOneAndUpdate(
     { userId: req.user.id },
-    { $pull: { dislikes: { film: { id: { $in: req.body.filmId } } } } },
+    { $pull: { dislikes: { film: req.body.filmId } } },
     { useFindAndModify: false },
     async (err, doc) => {
       try {
@@ -116,6 +126,7 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
   );
 });
 
+//{"date": "newDate"}
 //{"filmIds": ["tt1130884", "tt4729430","tt0035446"]}
 //{"username":"Admin", "password":"password"}
 
