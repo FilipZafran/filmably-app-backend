@@ -13,6 +13,7 @@ const friends = new Schema({
     senderUserId: {
         type: String,
         required: true,
+        // [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
     },
     receiverUserId: {
         type: String,
@@ -20,7 +21,8 @@ const friends = new Schema({
     },
     accepted: {
         type: Boolean,
-        default: false
+        default: false,
+        required: true
     }
 
 })

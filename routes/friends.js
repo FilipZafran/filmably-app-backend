@@ -6,28 +6,43 @@ const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 //need to add ensureauth
 //------------TESTING ROUTE---------//
 router.get("/getFriendsStatus/:otherUserId", ensureAuthenticated, (req, res) => {
-    Friends.find({ senderUserId: req.user.id }, { receiverUserId: req.params.otherUserId }, async (err, rs) => {
+    console.log("made it to route get friends")
+    console.log("sender", req.user.id)
+    console.log("receiver", req.params.otherUserId)
+    Friends.find({ senderUserId: req.user.id, receiverUserId: req.params.otherUserId }, async (err, rs) => {
         try {
+            console.log("rs", rs)
+            let results = rs;
+            console.log("restuls", results)
+            console.log(req.session)
             if (err) throw err
-            if (rs.length === 0) {
+            if (rs.length === 0 || rs === null) {
+                console.log("made it to null")
+
                 res.send({
                     data: true,
                     addFriend: true
                 })
-            } else if (rs.rows[0]) {
-                if (rs.rows[0].accepted === true) {
+            } else if (results[0]) {
+
+                if (results[0].accepted === true) {
+                    console.log("made it to true",)
                     res.send({
                         data: true,
                         unfriend: true
                     })
-                } else if (rs.rows[0].accepted === false) {
-                    if (rs.rows[0].receiverUserId == req.user.id) {
-                        console.log("res in accept friends", res)
+                } else if (results[0].accepted == false) {
+                    console.log("made it to false", results[0].accepted)
+                    // console.log("receiverid", receiverUserId)
+                    // console.log("req.user.id", req.user.id)
+                    if (results[0].receiverUserId == req.user.id) {
+                        console.log("res in accept friends")
                         res.send({
                             data: true,
                             acceptFriendReq: true
                         })
                     } else {
+                        console.log("rest")
                         res.send({
                             data: true,
                             cancelFriendReq: true
@@ -48,7 +63,8 @@ router.post("/makeFriendRequest/:otherUserId", ensureAuthenticated, (req, res) =
     Friends.create(
         {
             senderUserId: req.user.id,
-            receiverUserId: req.params.otherUserId
+            receiverUserId: req.params.otherUserId,
+
         },
         async (err, rs) => {
             try {
@@ -71,8 +87,7 @@ router.post("/makeFriendRequest/:otherUserId", ensureAuthenticated, (req, res) =
 
 router.post('/unfriend/:otherUserId', ensureAuthenticated, (req, res) => {
     Friends.findOneAndDelete(
-        { senderUserId: req.user.id },
-        { receiverUserId: req.params.otherUserId },
+        { senderUserId: req.user.id, receiverUserId: req.params.otherUserId },
         (err, rs) => {
             try {
                 if (err) throw err
@@ -89,10 +104,14 @@ router.post('/unfriend/:otherUserId', ensureAuthenticated, (req, res) => {
 
 router.post('/acceptFriendRequest/:otherUserId', ensureAuthenticated, (req, res) => {
     console.log("made it to route accept friends")
-    Friends.findOne({},
-        { senderUserId: req.user.id },
-        { receiverUserId: req.params.otherUserId },
+    Friends.updateOne(
+        {
+            senderUserId: req.user.id
+            , receiverUserId: req.params.otherUserId
+        },
+        { accepted: true },
         (err, rs) => {
+            console.log("rs in addFriends", rs)
             try {
                 if (err) throw err
                 if (rs) {
