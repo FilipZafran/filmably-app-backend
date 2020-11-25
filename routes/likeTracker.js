@@ -97,6 +97,9 @@ router.get('/dislikes', ensureAuthenticated, (req, res) => {
   });
 });
 
+//DELETE "likeTracker/dislikes"
+//{"filmIds": ["tt0033467", "tt0892769","tt0042876"]} (these are example ids)
+
 router.delete('/likes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
     try {
@@ -140,6 +143,9 @@ router.delete('/likes', ensureAuthenticated, (req, res) => {
   });
 });
 
+//DELETE "likeTracker/dislikes"
+//{"filmIds": ["tt0033467", "tt0892769","tt0042876"]} (these are example ids)
+
 router.delete('/dislikes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
     try {
@@ -182,8 +188,5 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
     }
   });
 });
-
-//{"filmIds": ["tt0033467", "tt0892769","tt0042876"]}
-//{"username":"Admin", "password":"password"}
 
 module.exports = router;

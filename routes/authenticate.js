@@ -7,6 +7,9 @@ const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
 //----------AUTHENTICATE ROUTER-----------------------
 
+//POST "/authenticate/login"
+//{"username":"Admin", "password":"password"}
+
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user) => {
     if (err) throw err;
