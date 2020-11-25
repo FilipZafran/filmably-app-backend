@@ -15,6 +15,10 @@ const likeTracker = new Schema({
     type: Array,
     required: true,
   },
+  filters: {
+    type: Array,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model('LikeTracker', likeTracker);
