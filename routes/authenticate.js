@@ -5,7 +5,6 @@ const User = require('../models/user');
 const passport = require('passport');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
-
 //----------AUTHENTICATE ROUTER-----------------------
 
 router.post('/login', (req, res, next) => {
@@ -19,7 +18,6 @@ router.post('/login', (req, res, next) => {
           message: 'Successfully Authenticated',
           user: { username: req.user.username },
         });
-        console.log(req.user.username + ' logged in');
       });
     }
   })(req, res, next);
@@ -52,9 +50,7 @@ router.get('/user', (req, res) => {
 
 router.get('/logout', (req, res) => {
   res.send(req.user.username + ' Logged Out');
-  console.log(req.user.username + ' Logged out');
   req.logout();
 });
-
 
 module.exports = router;
