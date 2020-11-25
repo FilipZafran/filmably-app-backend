@@ -141,23 +141,48 @@ router.delete('/likes', ensureAuthenticated, (req, res) => {
 });
 
 router.delete('/dislikes', ensureAuthenticated, (req, res) => {
-  LikeTracker.findOneAndUpdate(
-    { userId: req.user.id },
-    { $pull: { dislikes: { film: req.body.filmId } } },
-    { useFindAndModify: false },
-    async (err, doc) => {
-      try {
-        if (err) throw err;
-        if (doc) res.send(`removed from dislikes`);
-        if (!doc) res.send(`entry not found`);
-      } catch (err) {
-        console.log(err);
+  LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
+    try {
+      if (err) throw err;
+      if (doc) {
+        const filterDislikes = (dislikesArray, idsArray) => {
+          let index;
+          for (let i = 0; i < idsArray.length; i++) {
+            index = dislikesArray.findIndex((x) => x.film.id === idsArray[i]);
+            if (index > -1) {
+              dislikesArray.splice(index, 1);
+            }
+          }
+          return dislikesArray;
+        };
+        const newDislikesArray = await filterDislikes(
+          [...doc.dislikes],
+          [...req.body.filmIds]
+        );
+        LikeTracker.findOneAndUpdate(
+          { userId: req.user.id },
+          { $set: { dislikes: newDislikesArray } },
+          { useFindAndModify: false },
+          async (err, doc) => {
+            try {
+              if (err) throw err;
+              if (doc) {
+                res.send('removed from dislikes');
+              }
+              if (!doc) res.send('entry not found');
+            } catch (err) {
+              console.log(err);
+            }
+          }
+        );
       }
+      if (!doc) res.send(`entry not found`);
+    } catch (err) {
+      console.log(err);
     }
-  );
+  });
 });
 
-//{"date": "newDate"}
 //{"filmIds": ["tt0033467", "tt0892769","tt0042876"]}
 //{"username":"Admin", "password":"password"}
 
