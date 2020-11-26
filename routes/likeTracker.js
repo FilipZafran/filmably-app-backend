@@ -232,7 +232,7 @@ router.post('/filters', ensureAuthenticated, (req, res) => {
     async (err, doc) => {
       try {
         if (err) throw err;
-        if (doc) res.send(`"${req.body.filters}" are the new filters`);
+        if (doc) res.send('filters updated');
         if (!doc) {
           const newLikeTracker = new LikeTracker({
             userId: req.user.id,
@@ -241,7 +241,7 @@ router.post('/filters', ensureAuthenticated, (req, res) => {
             filters: req.body.filters,
           });
           await newLikeTracker.save();
-          res.send(`"${req.body.filter}" are the new filters`);
+          res.send('filters updated');
         }
       } catch (err) {
         console.log(err);
