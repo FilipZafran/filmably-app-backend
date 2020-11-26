@@ -23,6 +23,7 @@ router.put('/like', ensureAuthenticated, (req, res) => {
             userId: req.user.id,
             likes: [{ date: new Date(), film: req.body.film }],
             dislikes: [],
+            filters: {},
           });
           await newLikeTracker.save();
           res.send(`"${req.body.film['title']}" added to likes`);
@@ -52,6 +53,7 @@ router.put('/dislike', ensureAuthenticated, (req, res) => {
             userId: req.user.id,
             dislikes: [{ date: new Date(), film: req.body.film }],
             likes: [],
+            filters: {},
           });
           await newLikeTracker.save();
           res.send(`"${req.body.film['title']}" added to dislikes`);
@@ -97,18 +99,34 @@ router.get('/dislikes', ensureAuthenticated, (req, res) => {
   });
 });
 
-//DELETE "likeTracker/dislikes"
-//{"filmIds": ["tt0033467", "tt0892769","tt0042876"]} (these are example ids)
+router.get('/filters', ensureAuthenticated, (req, res) => {
+  LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
+    try {
+      if (err) throw err;
+      if (doc) {
+        res.send({ filters: doc['filters'] });
+      }
+      if (!doc) res.send({ filters: {} });
+    } catch (err) {
+      console.log(err);
+    }
+  });
+});
+
+//DELETE "likeTracker/likes"
+//{"films": [{film object}, {film object}, {film object}]}
 
 router.delete('/likes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
     try {
       if (err) throw err;
       if (doc) {
-        const filterLikes = (likesArray, idsArray) => {
+        const filterLikes = (likesArray, filmArray) => {
           let index;
-          for (let i = 0; i < idsArray.length; i++) {
-            index = likesArray.findIndex((x) => x.film.id === idsArray[i]);
+          for (let i = 0; i < filmArray.length; i++) {
+            index = likesArray.findIndex(
+              (x) => x.film.id === filmArray[i]['id']
+            );
             if (index > -1) {
               likesArray.splice(index, 1);
             }
@@ -117,11 +135,17 @@ router.delete('/likes', ensureAuthenticated, (req, res) => {
         };
         const newLikesArray = await filterLikes(
           [...doc.likes],
-          [...req.body.filmIds]
+          [...req.body.films]
         );
+        const datedFilmArray = await req.body.films.map((x) => {
+          return { date: new Date(), film: x };
+        });
         LikeTracker.findOneAndUpdate(
           { userId: req.user.id },
-          { $set: { likes: newLikesArray } },
+          {
+            $set: { likes: newLikesArray },
+            $push: { dislikes: { $each: datedFilmArray } },
+          },
           { useFindAndModify: false },
           async (err, doc) => {
             try {
@@ -144,17 +168,19 @@ router.delete('/likes', ensureAuthenticated, (req, res) => {
 });
 
 //DELETE "likeTracker/dislikes"
-//{"filmIds": ["tt0033467", "tt0892769","tt0042876"]} (these are example ids)
+//{"films": [{film object}, {film object}, {film object}]}
 
 router.delete('/dislikes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
     try {
       if (err) throw err;
       if (doc) {
-        const filterDislikes = (dislikesArray, idsArray) => {
+        const filterDislikes = (dislikesArray, filmArray) => {
           let index;
-          for (let i = 0; i < idsArray.length; i++) {
-            index = dislikesArray.findIndex((x) => x.film.id === idsArray[i]);
+          for (let i = 0; i < filmArray.length; i++) {
+            index = dislikesArray.findIndex(
+              (x) => x.film.id === filmArray[i]['id']
+            );
             if (index > -1) {
               dislikesArray.splice(index, 1);
             }
@@ -163,11 +189,17 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
         };
         const newDislikesArray = await filterDislikes(
           [...doc.dislikes],
-          [...req.body.filmIds]
+          [...req.body.films]
         );
+        const datedFilmArray = await req.body.films.map((x) => {
+          return { date: new Date(), film: x };
+        });
         LikeTracker.findOneAndUpdate(
           { userId: req.user.id },
-          { $set: { dislikes: newDislikesArray } },
+          {
+            $set: { dislikes: newDislikesArray },
+            $push: { likes: { $each: datedFilmArray } },
+          },
           { useFindAndModify: false },
           async (err, doc) => {
             try {
@@ -187,6 +219,35 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
       console.log(err);
     }
   });
+});
+
+//POST "/likeTracker/filters"
+//{"filters": {filter object}} sets the new filters
+
+router.post('/filters', ensureAuthenticated, (req, res) => {
+  LikeTracker.findOneAndUpdate(
+    { userId: req.user.id },
+    { $set: { filters: req.body.filters } },
+    { useFindAndModify: false },
+    async (err, doc) => {
+      try {
+        if (err) throw err;
+        if (doc) res.send(`"${req.body.filters}" are the new filters`);
+        if (!doc) {
+          const newLikeTracker = new LikeTracker({
+            userId: req.user.id,
+            dislikes: [],
+            likes: [],
+            filters: req.body.filters,
+          });
+          await newLikeTracker.save();
+          res.send(`"${req.body.filter}" are the new filters`);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  );
 });
 
 module.exports = router;
