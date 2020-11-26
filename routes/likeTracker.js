@@ -23,7 +23,7 @@ router.put('/like', ensureAuthenticated, (req, res) => {
             userId: req.user.id,
             likes: [{ date: new Date(), film: req.body.film }],
             dislikes: [],
-            filters: [],
+            filters: {},
           });
           await newLikeTracker.save();
           res.send(`"${req.body.film['title']}" added to likes`);
@@ -53,7 +53,7 @@ router.put('/dislike', ensureAuthenticated, (req, res) => {
             userId: req.user.id,
             dislikes: [{ date: new Date(), film: req.body.film }],
             likes: [],
-            filter: [],
+            filters: {},
           });
           await newLikeTracker.save();
           res.send(`"${req.body.film['title']}" added to dislikes`);
@@ -106,7 +106,7 @@ router.get('/filters', ensureAuthenticated, (req, res) => {
       if (doc) {
         res.send({ filters: doc['filters'] });
       }
-      if (!doc) res.send({ filters: [] });
+      if (!doc) res.send({ filters: {} });
     } catch (err) {
       console.log(err);
     }
@@ -222,7 +222,7 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
 });
 
 //POST "/likeTracker/filters"
-//{"filters": "filter", "filter", "filter", "filter"} sets the new filters
+//{"filters": {filter object}} sets the new filters
 
 router.post('/filters', ensureAuthenticated, (req, res) => {
   LikeTracker.findOneAndUpdate(
@@ -232,16 +232,16 @@ router.post('/filters', ensureAuthenticated, (req, res) => {
     async (err, doc) => {
       try {
         if (err) throw err;
-        if (doc) res.send('removed from filters');
+        if (doc) res.send(`"${req.body.filters}" are the new filters`);
         if (!doc) {
           const newLikeTracker = new LikeTracker({
             userId: req.user.id,
             dislikes: [],
             likes: [],
-            filter: [req.body.filter],
+            filters: req.body.filters,
           });
           await newLikeTracker.save();
-          res.send(`"${req.body.filter}" added to filters`);
+          res.send(`"${req.body.filter}" are the new filters`);
         }
       } catch (err) {
         console.log(err);

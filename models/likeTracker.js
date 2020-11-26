@@ -16,7 +16,7 @@ const likeTracker = new Schema({
     required: true,
   },
   filters: {
-    type: Array,
+    type: Object,
     required: true,
   },
 });
