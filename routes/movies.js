@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
-//can I call IMDB from the backend?  How do I do that?
+//Put filter lists in the backend once a day?
+//Get toSwipe lists based on filters and likes/dislikes
 
 router.get('/toSwipe', ensureAuthenticated, (req, res) => {});
 
