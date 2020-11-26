@@ -65,39 +65,6 @@ router.put('/dislike', ensureAuthenticated, (req, res) => {
   );
 });
 
-// PUT "/likeTracker/filter"
-// {"filter": "filter"}
-
-router.put('/filter', ensureAuthenticated, (req, res) => {
-  LikeTracker.findOneAndUpdate(
-    { userId: req.user.id },
-    {
-      $push: {
-        filters: req.body.filter,
-      },
-    },
-    { useFindAndModify: false },
-    async (err, doc) => {
-      try {
-        if (err) throw err;
-        if (doc) res.send(`"${req.body.filter}" added to filters`);
-        if (!doc) {
-          const newLikeTracker = new LikeTracker({
-            userId: req.user.id,
-            dislikes: [],
-            likes: [],
-            filter: [req.body.filter],
-          });
-          await newLikeTracker.save();
-          res.send(`"${req.body.filter}" added to filters`);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  );
-});
-
 router.get('/likes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
     try {
@@ -254,42 +221,33 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
   });
 });
 
-//DELETE "/likeTracker/filters"
-//{"filter": "filter"} deletes one filter at a time
+//POST "/likeTracker/filters"
+//{"filters": "filter", "filter", "filter", "filter"} sets the new filters
 
-router.delete('/filters', ensureAuthenticated, (req, res) => {
-  LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
-    try {
-      if (err) throw err;
-      if (doc) {
-        const removeFilter = (filterArray) => {
-          const index = filterArray.findIndex((x) => x === req.body.filter);
-          if (index > -1) {
-            filterArray.splice(index, 1);
-          }
-          return filterArray;
-        };
-        const newFilterArray = await removeFilter([...doc.filters]);
-        LikeTracker.findOneAndUpdate(
-          { userId: req.user.id },
-          { $set: { filters: newFilterArray } },
-          { useFindAndModify: false },
-          async (err, doc) => {
-            try {
-              if (err) throw err;
-              if (doc) res.send('removed from filters');
-              if (!doc) res.send('entry not found');
-            } catch (err) {
-              console.log(err);
-            }
-          }
-        );
+router.post('/filters', ensureAuthenticated, (req, res) => {
+  LikeTracker.findOneAndUpdate(
+    { userId: req.user.id },
+    { $set: { filters: req.body.filters } },
+    { useFindAndModify: false },
+    async (err, doc) => {
+      try {
+        if (err) throw err;
+        if (doc) res.send('removed from filters');
+        if (!doc) {
+          const newLikeTracker = new LikeTracker({
+            userId: req.user.id,
+            dislikes: [],
+            likes: [],
+            filter: [req.body.filter],
+          });
+          await newLikeTracker.save();
+          res.send(`"${req.body.filter}" added to filters`);
+        }
+      } catch (err) {
+        console.log(err);
       }
-      if (!doc) res.send(`entry not found`);
-    } catch (err) {
-      console.log(err);
     }
-  });
+  );
 });
 
 module.exports = router;
