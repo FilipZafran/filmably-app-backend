@@ -116,12 +116,12 @@ method: 'DELETE', url: `${serverURL}/likeTracker/dislikes`, data: {films: [<film
 method: 'GET', url: `${serverURL}/likeTracker/filters`, withCredentials: true
 ```
 
-- success returns {filters: {genreFilters: {\<filter>: \<boolean>, \<filter>: \<boolean>, ...}, timeFilters: {\<filter>: \<boolean>, \<filter>: \<boolean>, \<filter>: \<boolean>, ...}}}
+- success returns {filters: {genreFilters: ["\<filter>", "\<filter>", ...], timeFilters: ["\<filter>", "\<filter>", ...]}}
 - keys represent all filters availibe and boolean value represents whether the filter is active
 - if no filters have been initialized by the user the response will be {filters: {}}
 
 ```shell
-method: 'POST', url: `${serverURL}/likeTracker/filters`, data: {filters: genreFilters: {filter: boolean, filter: boolean, ...}, timeFilters: {filter: boolean, filter: boolean, ...}} withCredentials: true
+method: 'POST', url: `${serverURL}/likeTracker/filters`, data: {filters: {genreFilters: ["<filter>", "<filter>", ...], timeFilters: ["<filter>", "<filter>", ...]}} withCredentials: true
 ```
 
 - success returns "filters updated"
