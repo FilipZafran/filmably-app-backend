@@ -65,6 +65,9 @@ router.put('/dislike', ensureAuthenticated, (req, res) => {
   );
 });
 
+// PUT "/likeTracker/filter"
+// {"filter": "filter"}
+
 router.put('/filter', ensureAuthenticated, (req, res) => {
   LikeTracker.findOneAndUpdate(
     { userId: req.user.id },
@@ -143,7 +146,7 @@ router.get('/filters', ensureAuthenticated, (req, res) => {
   });
 });
 
-//DELETE "likeTracker/dislikes"
+//DELETE "likeTracker/likes"
 //{"films": [{film object}, {film object}, {film object}]}
 
 router.delete('/likes', ensureAuthenticated, (req, res) => {
@@ -250,6 +253,9 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
     }
   });
 });
+
+//DELETE "/likeTracker/filters"
+//{"filter": "filter"} deletes one filter at a time
 
 router.delete('/filters', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
