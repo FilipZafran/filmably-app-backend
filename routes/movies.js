@@ -2,23 +2,11 @@ const express = require('express');
 const router = express.Router();
 const MovieList = require('../models/movieList');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
-//const request = require('request');
+const axios = require('axios');
 
 const apiKey = process.env.IMDB_KEY;
 
-//request is depreciated so what would be an alternative?
-const api_helper = {
-  make_API_call: (url) => {
-    return new Promise((resolve, reject) => {
-      request(url, { json: true }, (err, res, body) => {
-        if (err) reject(err);
-        resolve(body);
-      });
-    });
-  },
-};
-
-router.post('/:listName', (req, res) => {
+router.post('/newList', (req, res) => {
   MovieList.findOne({ name: req.params.listName }, async (err, doc) => {
     try {
       if (err) throw err;
@@ -29,10 +17,10 @@ router.post('/:listName', (req, res) => {
           name: req.body.name,
           url: req.body.url,
           listId: req.body.listId,
-          dateUpdated: currentDate.setDate(currentDate.getDate() - 1),
+          dateUpdated: new Date(currentDate.getTime() - 24 * 60 * 60 * 1000),
         });
         await newMovieList.save();
-        res.send(`"${req.params.listName}" list created`);
+        res.send(`"${req.body.name}" list created`);
       }
     } catch (error) {
       console.log(error);
@@ -46,10 +34,29 @@ router.get('/:listName', (req, res) => {
       if (err) throw err;
       if (!doc) res.send('no list found');
       if (doc) {
-        const response = await api_helper.make_API_call(
-          `${doc.url}/${apiKey}/${doc.listId}`
-        );
-        response.json(response);
+        const currentDate = new Date();
+        const yesturday = currentDate.getTime() - 24 * 60 * 60 * 1000;
+        if (doc.dateUpdated.getTime() < yesturday) {
+          const response = await axios({
+            method: 'GET',
+            url: `${doc.url}/${apiKey}`,
+          });
+          MovieList.findOneAndUpdate(
+            { name: req.params.listName },
+            { $set: { films: response.data.items, dateUpdated: currentDate } },
+            { useFindAndModify: false },
+            async (err, doc) => {
+              try {
+                if (err) throw err;
+                if (doc) res.send('list updated');
+              } catch (error) {
+                console.log(error);
+              }
+            }
+          );
+        } else {
+          res.send(`list updated on ${doc.dateUpdated}`);
+        }
       }
     } catch (error) {
       console.log(error);
