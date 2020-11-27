@@ -71,14 +71,14 @@ method: 'GET', url: `${serverURL}/authenticate/logout`, withCredentials: true
 ---
 
 ```shell
-method: 'PUT', url: `${serverURL}/likeTracker/like`, data: <film object>, withCredentials: true
+method: 'PUT', url: `${serverURL}/likeTracker/like`, data: {"film": <film object>}, withCredentials: true
 ```
 
 - success returns "\<film title> added to likes"
 - saves the film object and date stamps when the film was liked
 
 ```shell
-method: 'PUT', url: `${serverURL}/likeTracker/dislike`, data: <film object>, withCredentials: true
+method: 'PUT', url: `${serverURL}/likeTracker/dislike`, data: {"film": <film object>}, withCredentials: true
 ```
 
 - success return "\<film title> added to dislikes"
