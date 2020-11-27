@@ -13,16 +13,15 @@ const movieList = new Schema({
   },
   listId: {
     type: String,
-    required: true,
   },
   dateUpdated: {
     type: Date,
     required: true,
-    default: new Date(),
   },
   films: {
     type: Array,
     required: true,
+    default: [],
   },
 });
 
