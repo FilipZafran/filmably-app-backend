@@ -11,18 +11,25 @@ const friends = new Schema({
     //     index: true
     // },
     senderUserId: {
-        type: String,
-        required: true,
-        // [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+        type: mongoose.Schema.Types.ObjectId, ref: 'User'
     },
+    // required: true,
+    // [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+
     receiverUserId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId, ref: 'User'
     },
+    // required: true,
+
     accepted: {
         type: Boolean,
         default: false,
         required: true
+    },
+
+    data: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
     }
 
 })
