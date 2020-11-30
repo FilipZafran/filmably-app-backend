@@ -1,7 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Friends = require('../models/friends.js')
+const User = require('../models/user');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
+const resources = {
+    username: "$username",
+    data: "$data"
+
+
+}
 
 //need to add ensureauth
 //------------TESTING ROUTE---------//
@@ -98,6 +105,80 @@ router.post('/acceptFriendRequest/:otherUserId', ensureAuthenticated, (req, res)
             }
         })
 })
+
+
+
+
+
+router.get('/wannabe', ensureAuthenticated, (req, res) => {
+    console.log("made it to a route to rerieve data on friends wannabe")
+    Friends.aggregate([
+
+        {
+            $lookup: {
+                from: "user",
+                localField: "senderUserId",
+                foreignField: "_id",
+                as: "dataJoin"
+            }
+
+    //     },
+        {
+            //     // $group: {
+            //     //     "senderUserId":
+            //     // }
+            $match: { $or: [{ senderUserId: req.user.id }, { receiverUserId: req.user.id }] }
+        }
+
+    ],
+
+        (err, rs) => {
+            try {
+                if (err) throw err
+                console.log(rs)
+                if (rs) {
+                    res.send(rs)
+                }
+            } catch (err) {
+                console.error("error in rendering friend list", err)
+            }
+
+        })
+
+})
+
+router.get('/wannabe', ensureAuthenticated, (req, res) => {
+    console.log("made it to a route to rerieve data on friends wannabe")
+    Friends.find({
+        $or: [
+            //     {
+            //     $and: [{ accepted: true }],
+            // },
+            { senderUserId: req.user.id }, { receiverUserId: req.user.id }
+        ]
+    }, (err, rs) => {
+        try {
+            if (err) throw err
+            if (rs) {
+                User.find({
+
+
+
+
+                })
+            }
+        } catch (err) {
+            console.error("error in rendering friend list", err)
+        }
+
+    })
+
+})
+
+// router.post('/accepted')
+
+
+
 
 
 module.exports = router;
