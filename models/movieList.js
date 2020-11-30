@@ -7,6 +7,7 @@ const movieList = new Schema({
     type: String,
     required: true,
   },
+  filterName: { type: String, required: true },
   url: {
     type: String,
     required: true,
@@ -22,6 +23,9 @@ const movieList = new Schema({
     type: Array,
     required: true,
     default: [],
+  },
+  filterType: {
+    type: String,
   },
 });
 
