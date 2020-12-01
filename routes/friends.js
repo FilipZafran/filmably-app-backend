@@ -88,26 +88,66 @@ router.post('/unfriend/:otherUserId', ensureAuthenticated, (req, res) => {
 })
 
 
-router.post('/acceptFriendRequest/:otherUserId', ensureAuthenticated, (req, res) => {
-
-    Friends.updateOne(
-        {
-            senderUserId: req.user.id,
-            receiverUserId: req.params.otherUserId,
-            accepted: true
-        },
-        (err, rs) => {
-            try {
-                if (err) throw err
-                if (rs) {
-                    res.send({ accepted: true })
+//I think you already fixed this endpoint so you can remove what I did
+//I just needed to get it working so I could create data
+router.post(
+    '/acceptFriendRequest/:otherUserId',
+    ensureAuthenticated,
+    (req, res) => {
+        Friends.findOneAndUpdate(
+            {
+                //I had to switch these two and remove the third parameter because I'm looking
+                //for the entry when the request was RECEIVED by the current user
+                //and SENT by the user in the params
+                senderUserId: req.params.otherUserId,
+                receiverUserId: req.user.id,
+            },
+            //this updates the entry to true
+            { $set: { accepted: true } },
+            { useFindAndModify: false },
+            (err, rs) => {
+                try {
+                    if (err) throw err;
+                    if (rs) {
+                        res.send({ accepted: true });
+                    }
+                } catch (err) {
+                    console.error('there is an error in accept route', err);
                 }
-            } catch (err) {
-                console.error("there is an error in accept route", err)
             }
-        })
-})
+        );
+    }
+);
 
+//returns an object of the userIds of all the logged in user's friends {friends: [<userId>,<userId>]}
+router.get('/allFriends', ensureAuthenticated, (req, res) => {
+    Friends.find(
+        {
+            $and: [
+                { accepted: true },
+                {
+                    $or: [{ senderUserId: req.user.id }, { receiverUserId: req.user.id }],
+                },
+            ],
+        },
+        async (err, doc) => {
+            try {
+                if (err) throw err;
+                if (!doc) res.send([]);
+                if (doc) {
+                    const friendsArray = doc.map((x) => {
+                        if (x.senderUserId === req.user.id) {
+                            return x.receiverUserId;
+                        } else return x.senderUserId;
+                    });
+                    res.send({ friends: friendsArray });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    );
+});
 
 
 
