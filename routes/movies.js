@@ -88,6 +88,11 @@ router.get('/filterNames', (req, res) => {
     try {
       if (err) throw err;
       if (doc) {
+        const timeArray = doc
+          .filter((x) => {
+            if (x.filterType === 'time') return x;
+          })
+          .map((x) => x.filterName);
         const genreArray = doc
           .filter((x) => {
             if (x.filterType === 'genre') return x;
@@ -99,7 +104,11 @@ router.get('/filterNames', (req, res) => {
           })
           .map((x) => x.filterName);
         res.send({
-          filters: { genreFilters: genreArray, defaultFilters: defaultArray },
+          filters: {
+            genreFilters: genreArray,
+            defaultFilters: defaultArray,
+            timeFilters: timeArray,
+          },
         });
       }
       if (!doc) res.send('no entries found');
