@@ -113,7 +113,12 @@ router.get('/toSwipe', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
     try {
       if (err) throw err;
-      const filters = doc ? doc['filters'] : {};
+      const filters = doc
+        ? [...doc['filters']['genreFilters'], ...doc['filters']['timeFilters']]
+        : [];
+      const alreadySwiped = doc
+        ? [...doc['likes'], ...doc['dislikes']].map((x) => x.film)
+        : [];
       Friends.find(
         {
           $and: [
@@ -165,6 +170,18 @@ router.get('/toSwipe', ensureAuthenticated, (req, res) => {
                 }
               });
             }
+            MovieList.find({ filterType: 'default' }, async (err, doc) => {
+              try {
+                if (err) throw err;
+                if (doc) {
+                  doc.map((x) => {
+                    toSwipe = [...toSwipe, ...x[films]];
+                  });
+                }
+              } catch (err) {
+                console.log(err);
+              }
+            });
             let uniqueToSwipe = [];
             while (toSwipe.length > 0) {
               const movie = toSwipe.shift();
@@ -175,6 +192,24 @@ router.get('/toSwipe', ensureAuthenticated, (req, res) => {
 
             //GET LIKES AND DISLIKES ARRAY AND REMOVE THEM FROM UNIQUETOSWIPE
             //TAKE 100 RANDOM ENTRIES AND SEND TO FRONTEND
+            for (let i; i < alreadySwiped.length; i++) {
+              const index = uniqueToSwipe.indexOf(alreadySwiped[i]);
+              uniqueToSwipe.splice(index, 1);
+            }
+
+            if (uniqueToSwipe <= 100) {
+              res.send(uniqueToSwipe);
+            } else {
+              const result = [];
+              for (let i = 0; i < 100; i++) {
+                result.push(
+                  uniqueToSwipe[
+                    Math.floor(Math.random() * uniqueToSwipe.length)
+                  ]
+                );
+              }
+              res.send(result);
+            }
           } catch (error) {
             console.log(error);
           }
