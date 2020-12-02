@@ -53,29 +53,29 @@ router.get('movieList/:listName', ensureAuthenticated, (req, res) => {
       if (err) throw err;
       if (!doc) res.send('no list found');
       if (doc) {
-        /*const currentDate = new Date();
+        const currentDate = new Date();
         const yesturday = currentDate.getTime() - 24 * 60 * 60 * 1000;
-        if (doc.dateUpdated.getTime() < yesturday) {*/
-        const response = await axios({
-          method: 'GET',
-          url: `${doc.url}/${apiKey}`,
-        });
-        MovieList.findOneAndUpdate(
-          { name: req.params.listName },
-          { $set: { films: response.data.items, dateUpdated: new Date() } },
-          { useFindAndModify: false },
-          async (err, doc) => {
-            try {
-              if (err) throw err;
-              if (doc) res.send('list updated');
-            } catch (error) {
-              console.log(error);
+        if (doc.dateUpdated.getTime() < yesturday) {
+          const response = await axios({
+            method: 'GET',
+            url: `${doc.url}/${apiKey}`,
+          });
+          MovieList.findOneAndUpdate(
+            { name: req.params.listName },
+            { $set: { films: response.data.items, dateUpdated: new Date() } },
+            { useFindAndModify: false },
+            async (err, doc) => {
+              try {
+                if (err) throw err;
+                if (doc) res.send('list updated');
+              } catch (error) {
+                console.log(error);
+              }
             }
-          }
-        );
-        /*} else {
+          );
+        } else {
           res.send(`list updated on ${doc.dateUpdated}`);
-        }*/
+        }
       }
     } catch (error) {
       console.log(error);
