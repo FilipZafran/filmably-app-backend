@@ -27,6 +27,10 @@ const user = new Schema({
     required: true,
     default: { email: '' },
   },
+  GDPR: {
+    type: Boolean,
+    default: false
+  }
 
 });
 mongoose.set('useCreateIndex', true)

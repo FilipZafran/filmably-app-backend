@@ -14,8 +14,15 @@ const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 //need to add ensureauth
 //------------TESTING ROUTE---------//
 router.get("/getFriendsStatus/:otherUserId", ensureAuthenticated, (req, res) => {
-    Friends.find({ $or: [{ senderUserId: req.user.id, receiverUserId: req.params.otherUserId }, { senderUserId: req.params.otherUserId, receiverUserId: req.user.id }] }, async (err, rs) => {
+    Friends.find({
+        $or: [
+            { senderUserId: req.user.id, receiverUserId: req.params.otherUserId },
+            { senderUserId: req.params.otherUserId, receiverUserId: req.user.id }
+        ]
+    }, async (err, rs) => {
         try {
+            console.log("senderId", req.user.id)
+            console.log("receiverId", req.params.otherUserId)
             let results = rs;
             if (err) throw err
             if (rs.length === 0 || rs === null) {
@@ -119,75 +126,7 @@ router.post(
     }
 );
 
-//returns an object of the userIds of all the logged in user's friends {friends: [<userId>,<userId>]}
-router.get('/allFriends', ensureAuthenticated, (req, res) => {
-    Friends.find(
-        {
-            $and: [
-                { accepted: true },
-                {
-                    $or: [{ senderUserId: req.user.id }, { receiverUserId: req.user.id }],
-                },
-            ],
-        },
-        async (err, doc) => {
-            try {
-                if (err) throw err;
-                if (!doc) res.send([]);
-                if (doc) {
-                    const friendsArray = doc.map((x) => {
-                        if (x.senderUserId === req.user.id) {
-                            return x.receiverUserId;
-                        } else return x.senderUserId;
-                    });
-                    res.send({ friends: friendsArray });
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
-    );
-});
 
-
-
-
-// router.get('/wannabe', ensureAuthenticated, (req, res) => {
-//     console.log("made it to a route to rerieve data on friends wannabe")
-//     Friends.aggregate([
-
-//         {
-//             $lookup: {
-//                 from: "User",
-//                 localField: "senderUserId",
-//                 foreignField: "_id",
-//                 as: "dataJoin"
-//             }
-
-//         },
-//         {
-//             //     // $group: {
-//             //     //     "senderUserId":
-//             //     // }
-//             $match: { $or: [{ senderUserId: req.user.id }, { receiverUserId: req.user.id }] }
-//         }
-
-//     ],
-
-//         (err, rs) => {
-//             try {
-//                 if (err) throw err
-//                 console.log(rs)
-//                 if (rs) {
-//                     res.send(rs)
-//                 }
-//             } catch (err) {
-//                 console.error("error in rendering friend list", err)
-//             }
-
-//         })
-
-// })
 
 router.get('/wannabe', ensureAuthenticated, (req, res) => {
     console.log("req.receiverUserId", req.user.id)

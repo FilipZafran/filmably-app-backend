@@ -70,6 +70,7 @@ app.use('/authenticate', require('./routes/authenticate'));
 app.use('/profiles', require('./routes/profiles'));
 app.use('/likeTracker', require('./routes/likeTracker'));
 app.use('/friends', require('./routes/friends'));
+app.use('/gdpr', require('./routes/gdpr'));
 
 //-----------End of Routes ---------------------------------
 
