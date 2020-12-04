@@ -147,7 +147,7 @@ method: 'DELETE', url: `${serverURL}/movies/movieList/:listName`
 - if no list by that name is found, "list not found," will be returned
 
 ```shell
-method: 'GET', url: `${serverURL}/movies/movieList/:listName'
+method: 'PATCH', url: `${serverURL}/movies/movieList/:listName'
 ```
 
 - if the list has not been updated in the past 24 hours, the list will be refreshed based on new information from the external API, the datestamp will be updated and 'list updated' will be returned

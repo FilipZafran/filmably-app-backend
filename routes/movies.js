@@ -47,7 +47,7 @@ router.delete('/movieList/:listName', (req, res) => {
   );
 });
 
-router.get('/movieList/:listName', ensureAuthenticated, (req, res) => {
+router.patch('/movieList/:listName', ensureAuthenticated, (req, res) => {
   MovieList.findOne({ name: req.params.listName }, async (err, doc) => {
     try {
       if (err) throw err;
@@ -172,7 +172,7 @@ router.get('/toSwipe', ensureAuthenticated, (req, res) => {
                 try {
                   if (err) throw err;
                   if (doc) {
-                    toSwipe = [...toSwipe, ...doc[films]];
+                    toSwipe = [...toSwipe, ...doc['films']];
                   }
                 } catch (err) {
                   console.log(err);
@@ -184,7 +184,7 @@ router.get('/toSwipe', ensureAuthenticated, (req, res) => {
                 if (err) throw err;
                 if (doc) {
                   doc.map((x) => {
-                    toSwipe = [...toSwipe, ...x[films]];
+                    toSwipe = [...toSwipe, ...x['films']];
                   });
                 }
               } catch (err) {
