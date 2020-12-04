@@ -121,7 +121,7 @@ method: 'GET', url: `${serverURL}/likeTracker/filters`, withCredentials: true
 - if no filters have been initialized by the user the response will be {filters: {}}
 
 ```shell
-method: 'POST', url: `${serverURL}/likeTracker/filters`, data: {filters: {genreFilters: ["<filter>", "<filter>", ...], timeFilters: ["<filter>", "<filter>", ...]}} withCredentials: true
+method: 'POST', url: `${serverURL}/likeTracker/filters`, data: {filters: {genreFilters: ["<filter>", "<filter>", ...], timeFilters: ["<filter>", "<filter>", ...]}}, withCredentials: true
 ```
 
 - success returns "filters updated"
@@ -147,7 +147,7 @@ method: 'DELETE', url: `${serverURL}/movies/movieList/:listName`
 - if no list by that name is found, "list not found," will be returned
 
 ```shell
-method: 'PATCH', url: `${serverURL}/movies/movieList/:listName'
+method: 'PATCH', url: `${serverURL}/movies/movieList/:listName', withCredentials: true
 ```
 
 - if the list has not been updated in the past 24 hours, the list will be refreshed based on new information from the external API, the datestamp will be updated and 'list updated' will be returned
