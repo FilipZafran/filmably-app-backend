@@ -32,7 +32,7 @@ router.post('/newList', (req, res) => {
   });
 });
 
-router.delete('movieList/:listName', (req, res) => {
+router.delete('/movieList/:listName', (req, res) => {
   MovieList.findOneAndDelete(
     { name: req.params.listName },
     async (err, doc) => {
@@ -47,7 +47,7 @@ router.delete('movieList/:listName', (req, res) => {
   );
 });
 
-router.get('movieList/:listName', ensureAuthenticated, (req, res) => {
+router.get('/movieList/:listName', ensureAuthenticated, (req, res) => {
   MovieList.findOne({ name: req.params.listName }, async (err, doc) => {
     try {
       if (err) throw err;
@@ -58,7 +58,7 @@ router.get('movieList/:listName', ensureAuthenticated, (req, res) => {
         if (doc.dateUpdated.getTime() < yesturday) {
           const response = await axios({
             method: 'GET',
-            url: `${doc.url}/${apiKey}`,
+            url: `${doc.url}/${apiKey}/${doc.listId}`,
           });
           MovieList.findOneAndUpdate(
             { name: req.params.listName },
