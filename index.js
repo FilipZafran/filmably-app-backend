@@ -55,11 +55,6 @@ app.use(
     secret: SESSION_SECRET,
     resave: true,
     saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-    },
   })
 );
 
