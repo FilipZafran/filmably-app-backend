@@ -5,7 +5,7 @@ const LikeTracker = require('../models/likeTracker');
 const Friends = require('../models/friends');
 const MovieList = require('../models/movieList');
 
-const fetchMoviesFromList = require('../actions/fetchMoviesFromList');
+const fetchMoviesFromList = require('../controllers/fetchMoviesFromList');
 
 router.get('/', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
@@ -22,11 +22,13 @@ router.get('/', ensureAuthenticated, (req, res) => {
       console.log(filters);
 
       //HERE
-      const moviesList = filters.map((filter) => {
-        fetchMoviesFromList(filter);
+      const moviesList = [];
+
+      filters.map((filter) => {
+        fetchMoviesFromList(filter, moviesList);
       });
 
-      console.log({ list: moviesList });
+      console.log(moviesList);
       MovieList.find({ filterType: 'default' }, async (err, doc) => {
         try {
           if (err) throw err;
