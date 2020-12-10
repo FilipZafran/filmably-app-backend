@@ -20,9 +20,8 @@ router.get('/', ensureAuthenticated, (req, res) => {
             .map((x) => x.film)
 
             //there are null objects ocassionally need to handel this and figure out why
-            .map((x) => x != null)
+            .map((x) => x != null && x)
         : [];
-      console.log('alreadySwiped: ', alreadySwiped.length);
 
       //fetch list of friends
 
@@ -41,7 +40,6 @@ router.get('/', ensureAuthenticated, (req, res) => {
                 return result;
               };
               const moviesList = flatten(temp);
-              console.log('moviesList: ', moviesList.length);
 
               //fetch lists of movies liked by friends and add to moviesList
 
@@ -58,31 +56,40 @@ router.get('/', ensureAuthenticated, (req, res) => {
               };
 
               const uniqueList = makeUnique(moviesList);
-              console.log('uniqueList: ', uniqueList.length);
 
               //remove films already swiped by user
               const removeSwiped = (list, swipe) => {
-                if (swipe.length === 0) {
+                if (swipe.length < 1) {
                   return list;
-                }
-                const result = [];
-                while (list.length > 0) {
-                  const movie = list.shift();
-                  if (
-                    swipe.find((x) => x['id'] === movie['id']) === undefined
-                  ) {
-                    result.push(movie);
+                } else {
+                  const result = [];
+                  while (list.length > 0) {
+                    const movie = list.shift();
+                    if (
+                      swipe.find((x) => x['id'] === movie['id']) === undefined
+                    ) {
+                      result.push(movie);
+                    }
                   }
+                  return result;
+                }
+              };
+              const toSwipe = removeSwiped(uniqueList, alreadySwiped);
+
+              //randomize array
+              const randomize = (array) => {
+                const result = [];
+                while (array.length > 0) {
+                  let randomIndex = Math.floor(Math.random() * array.length);
+                  result.push(array[randomIndex]);
+                  array.splice(randomIndex, 1);
                 }
                 return result;
               };
-              const toSwipe = removeSwiped(uniqueList, alreadySwiped);
-              console.log('toSwipe: ', toSwipe.length);
-
-              //randomize array!!
+              const randomizedToSwipe = randomize(toSwipe);
 
               //send resulting array to frontEnd
-              res.send(toSwipe);
+              res.send(randomizedToSwipe);
             }
           } catch (err) {
             console.log(err);
