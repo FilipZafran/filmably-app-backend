@@ -18,6 +18,8 @@ router.get('/', ensureAuthenticated, (req, res) => {
       const alreadySwiped = doc
         ? [...doc['likes'], ...doc['dislikes']]
             .map((x) => x.film)
+
+            //there are null objects ocassionally need to handel this and figure out why
             .map((x) => x != null)
         : [];
       console.log('alreadySwiped: ', alreadySwiped.length);
