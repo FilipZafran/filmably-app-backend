@@ -18,6 +18,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
       const alreadySwiped = doc
         ? [...doc['likes'], ...doc['dislikes']].map((x) => x.film)
         : [];
+      console.log('alreadySwiped: ', alreadySwiped.length);
 
       //fetch list of friends
 
@@ -30,9 +31,13 @@ router.get('/', ensureAuthenticated, (req, res) => {
             if (!doc) return [];
             if (doc) {
               const temp = doc.map((x) => x['films']);
-              const flatten = (x) => [].concat(...x);
+              const flatten = (x) => {
+                let result = [];
+                x.map((element) => (result = [...result, ...element]));
+                return result;
+              };
               const moviesList = flatten(temp);
-              //console.log('moviesList: ', moviesList.length);
+              console.log('moviesList: ', moviesList.length);
 
               //fetch lists of movies liked by friends and add to moviesList
 
@@ -49,23 +54,28 @@ router.get('/', ensureAuthenticated, (req, res) => {
               };
 
               const uniqueList = makeUnique(moviesList);
-              //console.log('uniqueList: ', uniqueList.length);
+              console.log('uniqueList: ', uniqueList.length);
 
               //remove films already swiped by user
-              const removeSwiped = (list, swiped) => {
+              const removeSwiped = (list, swipe) => {
+                if (swipe.length === 0) {
+                  return list;
+                }
                 const result = [];
                 while (list.length > 0) {
                   const movie = list.shift();
                   if (
-                    swiped.find((film) => film['id'] === movie['id']) ===
-                    undefined
-                  )
+                    swipe.find((x) => x['id'] === movie['id']) === undefined
+                  ) {
                     result.push(movie);
+                  }
                 }
                 return result;
               };
               const toSwipe = removeSwiped(uniqueList, alreadySwiped);
-              //console.log('toSwipe: ', toSwipe.length);
+              console.log('toSwipe: ', toSwipe.length);
+
+              //randomize array!!
 
               //send resulting array to frontEnd
               res.send(toSwipe);
