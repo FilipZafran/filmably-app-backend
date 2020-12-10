@@ -16,7 +16,9 @@ router.get('/', ensureAuthenticated, (req, res) => {
         ? [...doc['filters']['genreFilters'], ...doc['filters']['timeFilters']]
         : [];
       const alreadySwiped = doc
-        ? [...doc['likes'], ...doc['dislikes']].map((x) => x.film)
+        ? [...doc['likes'], ...doc['dislikes']]
+            .map((x) => x.film)
+            .map((x) => x != null)
         : [];
       console.log('alreadySwiped: ', alreadySwiped.length);
 
