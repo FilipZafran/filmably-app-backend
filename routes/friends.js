@@ -159,7 +159,7 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
 });
 
 // These people want to be your friends
-router.get('/wannabees', ensureAuthenticated, (req, res) => {
+router.get('/wannabes', ensureAuthenticated, (req, res) => {
     console.log("req.receiverUserId", req.user.id)
     Friends.find({
         $and: [
@@ -168,26 +168,36 @@ router.get('/wannabees', ensureAuthenticated, (req, res) => {
         ]
     },
         (err, doc) => {
+            console.log("doc", doc)
+            console.log("req.aprams", req.params)
             try {
                 if (err) throw err
                 if (!doc) res.send([]);
                 if (doc) {
-                    let senderArr = [];
-                    let receiverArr = [];
+                    // let senderArr = [];
+                    // let sentReqArr = [];
+                    let otherIdArr = [];
                     const wannabeArray = doc.map((x) => {
-
+                        console.log("requserID", req.user.id)
                         if (x.senderUserId === req.user.id) {
                             console.log("senderUerID", x.senderUserId)
-                            return senderArr.push(x.senderUserId);
-                        } else return receiverArr.push(x.receiverUserId);
+                            otherIdArr.push(x.senderUserId);
+                            // sentReqArr.push(x.receiverUserId)
+                        } else {
+                            otherIdArr.push(x.receiverUserId);
+                            // sentReqArr.push(x.senderUserId)
+                        }
+
+                        console.log("otherId", otherIdArr)
+                        // console.log("sentReqArr", sentReqArr)
                     });
-                    console.log("senderArr", senderArr)
-                    console.log("receiverArr", receiverArr)
-                    console.log("wannabeArr", [...senderArr, ...receiverArr])
+                    // console.log("senderArr", senderArr)
+                    // console.log("receiverArr", receiverArr)
+                    // console.log("wannabeArr", [...senderArr, ...receiverArr])
                     res.send({
-                        wannabees: {
-                            senderArray: [...senderArr],
-                            receiverArray: [...receiverArr]
+                        wannabes: {
+                            otherId: [...otherIdArr],
+                            // sentReqArr: [...sentReqArr]
                         }
                     });
                 }
