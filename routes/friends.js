@@ -128,20 +128,71 @@ router.post(
 
 
 
-router.get('/wannabe', ensureAuthenticated, (req, res) => {
+//returns an object of the userIds of all the logged in user's friends {friends: [<userId>,<userId>]}
+router.get('/allFriends', ensureAuthenticated, (req, res) => {
+    Friends.find(
+        {
+            $and: [
+                { accepted: true },
+                {
+                    $or: [{ senderUserId: req.user.id }, { receiverUserId: req.user.id }],
+                },
+            ],
+        },
+        async (err, doc) => {
+            try {
+                if (err) throw err;
+                if (!doc) res.send([]);
+                if (doc) {
+                    const friendsArray = doc.map((x) => {
+                        if (x.senderUserId === req.user.id) {
+                            return x.receiverUserId;
+                        } else return x.senderUserId;
+                    });
+                    res.send({ friends: friendsArray });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    );
+});
+
+// These people want to be your friends
+router.get('/wannabees', ensureAuthenticated, (req, res) => {
     console.log("req.receiverUserId", req.user.id)
     Friends.find({
-        $or: [{ senderUserId: req.user.id }, { receiverUserId: req.user.id }]
+        $and: [
+            { accepted: false },
+            { senderUserId: req.user.id }
+        ]
     },
-        (err, rs) => {
+        (err, doc) => {
             try {
                 if (err) throw err
-                if (rs) {
-                    console.log("rs in wannabe", rs)
-                    res.send(rs)
+                if (!doc) res.send([]);
+                if (doc) {
+                    let senderArr = [];
+                    let receiverArr = [];
+                    const wannabeArray = doc.map((x) => {
+
+                        if (x.senderUserId === req.user.id) {
+                            console.log("senderUerID", x.senderUserId)
+                            return senderArr.push(x.senderUserId);
+                        } else return receiverArr.push(x.receiverUserId);
+                    });
+                    console.log("senderArr", senderArr)
+                    console.log("receiverArr", receiverArr)
+                    console.log("wannabeArr", [...senderArr, ...receiverArr])
+                    res.send({
+                        wannabees: {
+                            senderArray: [...senderArr],
+                            receiverArray: [...receiverArr]
+                        }
+                    });
                 }
-            } catch (err) {
-                console.error("there is an error in wannabe", err)
+            } catch (error) {
+                console.log(error);
             }
         })
 

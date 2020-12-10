@@ -3,7 +3,8 @@ mongoose.set('useCreateIndex', true)
 
 const Schema = mongoose.Schema;
 
-
+// import User from './user'
+var Users = require('mongoose').model('User').schema
 const friends = new Schema({
     // username: {
     //     type: String,
