@@ -5,9 +5,10 @@ const LikeTracker = require('../models/likeTracker');
 const Friends = require('../models/friends');
 const MovieList = require('../models/movieList');
 
-const fetchMoviesFromList = require('../controllers/fetchMoviesFromList');
+//still need to fetch list of friends, fetch movies liked by friends, add movies liked by friends to array
 
 router.get('/', ensureAuthenticated, (req, res) => {
+  //fetch all active filters and list of already swiped movies saved in user's likeTracker
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
     try {
       if (err) throw err;
@@ -18,59 +19,62 @@ router.get('/', ensureAuthenticated, (req, res) => {
         ? [...doc['likes'], ...doc['dislikes']].map((x) => x.film)
         : [];
 
-      //ALL ABOVE WORKS NEED TO CONFIRM FRIENDSARRAY
-      console.log(filters);
+      //fetch list of friends
 
-      //HERE
-      const moviesList = [];
+      //fetch all movies in lists by active filter as well as default filters
+      MovieList.find(
+        { $or: [{ filterName: { $in: filters } }, { filterType: 'default' }] },
+        async (err, doc) => {
+          try {
+            if (err) throw err;
+            if (!doc) return [];
+            if (doc) {
+              const temp = doc.map((x) => x['films']);
+              const flatten = (x) => [].concat(...x);
+              const moviesList = flatten(temp);
+              //console.log('moviesList: ', moviesList.length);
 
-      const thisList = filters.map((filter) => {
-        fetchMoviesFromList(filter, moviesList);
-        console.log('moviesList: ', moviesList);
-      });
+              //fetch lists of movies liked by friends and add to moviesList
 
-      console.log('thisList ', thisList);
+              //remove duplicates
+              const makeUnique = (list) => {
+                const unique = [];
+                while (list.length > 0) {
+                  const movie = list.shift();
+                  if (list.find((x) => x['id'] === movie['id']) === undefined) {
+                    unique.push(movie);
+                  }
+                }
+                return unique;
+              };
 
-      console.log('here');
-      res.send(moviesList);
-      // MovieList.find({ filterType: 'default' }, async (err, doc) => {
-      //   try {
-      //     if (err) throw err;
-      //     if (doc) {
-      //       doc.map((x) => {
-      //         toSwipe = [...toSwipe, ...x['films']];
-      //       });
-      //     }
-      //   } catch (err) {
-      //     console.log(err);
-      //   }
-      // });
-      // let uniqueToSwipe = [];
-      // while (toSwipe.length > 0) {
-      //   const movie = toSwipe.shift();
-      //   if (toSwipe.indexOf(movie) > -1) {
-      //     uniqueToSwipe.push(movie);
-      //   }
-      // }
+              const uniqueList = makeUnique(moviesList);
+              //console.log('uniqueList: ', uniqueList.length);
 
-      // //GET LIKES AND DISLIKES ARRAY AND REMOVE THEM FROM UNIQUETOSWIPE
-      // //TAKE 100 RANDOM ENTRIES AND SEND TO FRONTEND
-      // for (let i; i < alreadySwiped.length; i++) {
-      //   const index = uniqueToSwipe.indexOf(alreadySwiped[i]);
-      //   uniqueToSwipe.splice(index, 1);
-      // }
+              //remove films already swiped by user
+              const removeSwiped = (list, swiped) => {
+                const result = [];
+                while (list.length > 0) {
+                  const movie = list.shift();
+                  if (
+                    swiped.find((film) => film['id'] === movie['id']) ===
+                    undefined
+                  )
+                    result.push(movie);
+                }
+                return result;
+              };
+              const toSwipe = removeSwiped(uniqueList, alreadySwiped);
+              //console.log('toSwipe: ', toSwipe.length);
 
-      // if (uniqueToSwipe <= 100) {
-      //   res.send(uniqueToSwipe);
-      // } else {
-      //   const result = [];
-      //   for (let i = 0; i < 100; i++) {
-      //     result.push(
-      //       uniqueToSwipe[Math.floor(Math.random() * uniqueToSwipe.length)]
-      //     );
-      //   }
-      //   res.send({ result: result });
-      // }
+              //send resulting array to frontEnd
+              res.send(toSwipe);
+            }
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      );
     } catch (err) {
       console.log(err);
     }
