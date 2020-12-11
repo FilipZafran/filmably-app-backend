@@ -51,18 +51,11 @@ method: 'POST', url: `${serverURL}/authenticate/register`, data: {"username": "<
 - success response "User Created"
 
 ```shell
-method: 'GET', url: `${serverURL}/authenticate/user`, withCredentials: true
+method: 'GET', url: `${serverURL}/authenticate/user`, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - no user logged in response _null_
 - user currently logged /in response {"username": "\<username>", "id": "\<id>"}
-
-```shell
-method: 'GET', url: `${serverURL}/authenticate/logout`, withCredentials: true
-```
-
-- no user logged in response _null_
-- user successfully logged out response "\<username> Logged Out"
 
 <br>
 
@@ -71,49 +64,49 @@ method: 'GET', url: `${serverURL}/authenticate/logout`, withCredentials: true
 ---
 
 ```shell
-method: 'PUT', url: `${serverURL}/likeTracker/like`, data: {"film": <film object>}, withCredentials: true
+method: 'PUT', url: `${serverURL}/likeTracker/like`, data: {"film": <film object>}, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - success returns "\<film title> added to likes"
 - saves the film object and date stamps when the film was liked
 
 ```shell
-method: 'PUT', url: `${serverURL}/likeTracker/dislike`, data: {"film": <film object>}, withCredentials: true
+method: 'PUT', url: `${serverURL}/likeTracker/dislike`, data: {"film": <film object>}, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - success return "\<film title> added to dislikes"
 - saves the film object and date stamps when the film was disliked
 
 ```shell
-method: 'GET', url: `${serverURL}/likeTracker/likes`, withCredentials: true
+method: 'GET', url: `${serverURL}/likeTracker/likes`, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - success returns {likes: [{date: \<datestamp>, film: \<film object>}, {date: \<datestamp when liked>, film: \<film object>}, ...]}
 - array is sorted by datestamp from most recent to least recently liked
 
 ```shell
-method: 'GET', url: `${serverURL}/likeTracker/dislikes`, withCredentials: true
+method: 'GET', url: `${serverURL}/likeTracker/dislikes`, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - success returns {dislikes: [{date: \<datestamp>, film: \<film object>}, {date: \<datestamp when liked>, film: \<film object>}, ...]}
 - array is sorted by datestamp from most recent to least recently disliked
 
 ```shell
-method: 'DELETE', url: `${serverURL}/likeTracker/likes`, data: {films: [<film object>, <film object>, ...]}, withCredentials: true
+method: 'DELETE', url: `${serverURL}/likeTracker/likes`, data: {films: [<film object>, <film object>, ...]}, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - success returns "removed from likes"
 - removes film from the likes array and adds it to the dislikes array with a current datestamp
 
 ```shell
-method: 'DELETE', url: `${serverURL}/likeTracker/dislikes`, data: {films: [<film object>, <film object>, ...]}, withCredentials: true
+method: 'DELETE', url: `${serverURL}/likeTracker/dislikes`, data: {films: [<film object>, <film object>, ...]}, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - success returns "removed from dislikes"
 - removes film from the dislikes array and adds it to the likes array with a current datestamp
 
 ```shell
-method: 'GET', url: `${serverURL}/likeTracker/filters`, withCredentials: true
+method: 'GET', url: `${serverURL}/likeTracker/filters`, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - success returns {filters: {genreFilters: ["\<filter>", "\<filter>", ...], timeFilters: ["\<filter>", "\<filter>", ...]}}
@@ -121,7 +114,7 @@ method: 'GET', url: `${serverURL}/likeTracker/filters`, withCredentials: true
 - if no filters have been initialized by the user the response will be {filters: {}}
 
 ```shell
-method: 'POST', url: `${serverURL}/likeTracker/filters`, data: {filters: {genreFilters: ["<filter>", "<filter>", ...], timeFilters: ["<filter>", "<filter>", ...]}}, withCredentials: true
+method: 'POST', url: `${serverURL}/likeTracker/filters`, data: {filters: {genreFilters: ["<filter>", "<filter>", ...], timeFilters: ["<filter>", "<filter>", ...]}}, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - success returns "filters updated"
@@ -147,7 +140,7 @@ method: 'DELETE', url: `${serverURL}/movies/movieList/:listName`
 - if no list by that name is found, "list not found," will be returned
 
 ```shell
-method: 'PATCH', url: `${serverURL}/movies/movieList/:listName', withCredentials: true
+method: 'PATCH', url: `${serverURL}/movies/movieList/:listName', headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - if the list has not been updated in the past 24 hours, the list will be refreshed based on new information from the external API, the datestamp will be updated and 'list updated' will be returned
@@ -165,7 +158,7 @@ method: 'GET', url: `${serverURL}/movies/filterNames`
 ## To Swipe
 
 ```shell
-method: 'GET', url: `${serverURL}/toSwipe`, withCredentials: true
+method: 'GET', url: `${serverURL}/toSwipe`, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
 - success returns an array of film objects [\<film>, \<film>, \<film>]
