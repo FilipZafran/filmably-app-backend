@@ -159,3 +159,14 @@ method: 'GET', url: `${serverURL}/movies/filterNames`
 ```
 
 - success returns an object {filters: {genreFilters: [\<filter name>, \<filter name>, ...], defaultFilters: [\<filter name>, \<filter name>, ...], timeFilters: [\<filter name>, \<filter name>, ...]}
+
+<br>
+
+## To Swipe
+
+```shell
+method: 'GET', url: `${serverURL}/toSwipe`, withCredentials: true
+```
+
+- success returns an array of film objects [\<film>, \<film>, \<film>]
+- failure returns an error message
