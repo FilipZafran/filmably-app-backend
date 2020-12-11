@@ -11,22 +11,40 @@ const user = new Schema({
 		required: true,
 		index: true
 	},
+
+	age: {
+		type: String,
+		required: true
+	},
+
+	city: {
+		type: String,
+		required: true
+	},
+
+	email: {
+		type: String,
+		required: true
+	},
+
 	password: {
 		type: String,
 		required: true
 	},
+
 	registeredAt: {
 		type: Date,
 		required: true,
 		default: new Date()
 	},
+
 	lastLoggedIn: {
 		type: Date
 	},
-	data: {
-		type: Object,
-		required: true,
-		default: { email: '' }
+
+	picture: {
+		type: String,
+		required: true
 	}
 });
 
