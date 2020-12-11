@@ -1,14 +1,11 @@
 const mongoose = require('mongoose');
 const cors = require('cors');
 const passport = require('passport');
-const passportLocal = require('passport-local').Strategy;
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const User = require('./models/user');
-const LikeTracker = require('./models/likeTracker');
-const Friends = require('./models/friends');
 const express = require('express');
 const dotenv = require('dotenv');
+const fileUpload = require('express-fileupload');
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
@@ -32,20 +29,21 @@ mongoose.connect(
   }
 );
 
-//MIDDLEWARE <------ if you think we should put middleware in a seperate foulder that is fine with me
-
-app.use(express.json());
-
+// create-react-app defaults to localhost:3000
 app.use(express.urlencoded({ extended: false }));
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'https://filmably.netlify.app'], //<----- create-react-app defaults to localhost:3000
+    origin: ['http://localhost:3000', 'https://filmably.netlify.app'],
     credentials: true,
   })
 );
 
-//to my understanding we need to use the session secret to decrypt our hashed passwords
-//I put this in the excel spreadsheet as well
+//MIDDLEWARE
+
+app.use(express.json());
+
+// File Upload
+app.use(fileUpload());
 
 //THIS SESSION SECRET WILL BE CHANGED FOR PRODUCTION
 const SESSION_SECRET = process.env.SESSIONSECRET;
@@ -72,6 +70,7 @@ app.use('/likeTracker', require('./routes/likeTracker'));
 app.use('/friends', require('./routes/friends'));
 app.use('/movies', require('./routes/movies'));
 app.use('/toSwipe', require('./routes/toSwipe'));
+app.use('/uploads', require('./routes/uploads'));
 
 //-----------End of Routes ---------------------------------
 
