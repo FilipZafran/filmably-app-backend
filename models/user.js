@@ -27,9 +27,9 @@ const user = new Schema({
     required: true,
     default: { email: '' },
   },
-
+  // email should have unique: true
 });
-mongoose.set('useCreateIndex', true)
-user.index({ username: 'text' })
+mongoose.set('useCreateIndex', true);
+user.index({ username: 'text' });
 
 module.exports = mongoose.model('User', user);
