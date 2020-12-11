@@ -47,9 +47,11 @@ app.use(
 app.use(express.json());
 
 // File Upload
+//this is middleware and should probably stay here
 app.use(fileUpload());
 
 // // upload endpoint
+//this is an endpoint and if you look further down I made a route for it in the ROUTES section
 // app.post('/uploads', (req, res) => {
 // 	if (req.files === null) {
 // 		return res.status(400).json({ msg: 'No file was uploaded' });
@@ -94,6 +96,8 @@ app.use('/likeTracker', require('./routes/likeTracker'));
 app.use('/friends', require('./routes/friends'));
 app.use('/movies', require('./routes/movies'));
 app.use('/toSwipe', require('./routes/toSwipe'));
+
+//here is your uploads route
 app.use('/uploads', require('./routes/uploads'));
 
 //-----------End of Routes ---------------------------------
