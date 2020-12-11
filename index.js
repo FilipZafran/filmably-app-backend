@@ -93,6 +93,7 @@ app.use('/profiles', require('./routes/profiles'));
 app.use('/likeTracker', require('./routes/likeTracker'));
 app.use('/friends', require('./routes/friends'));
 app.use('/movies', require('./routes/movies'));
+app.use('/toSwipe', require('./routes/toSwipe'));
 
 //-----------End of Routes ---------------------------------
 

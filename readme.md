@@ -121,7 +121,41 @@ method: 'GET', url: `${serverURL}/likeTracker/filters`, withCredentials: true
 - if no filters have been initialized by the user the response will be {filters: {}}
 
 ```shell
-method: 'POST', url: `${serverURL}/likeTracker/filters`, data: {filters: {genreFilters: ["<filter>", "<filter>", ...], timeFilters: ["<filter>", "<filter>", ...]}} withCredentials: true
+method: 'POST', url: `${serverURL}/likeTracker/filters`, data: {filters: {genreFilters: ["<filter>", "<filter>", ...], timeFilters: ["<filter>", "<filter>", ...]}}, withCredentials: true
 ```
 
 - success returns "filters updated"
+
+<br>
+
+## Movies
+
+---
+
+```shell
+method: 'POST', url: `${serverURL}/movies/newList`, data: {"name": <list name>, "url": <IMDB request url not including api key or list id>, "listId": <list id if applicable>, "filterName": <desired name of filter>, "fitlerType": <time, genre, or default>}
+```
+
+- success returns "\<list name> list created"
+- if a list by that name already exists, "list already exists," will be returned
+
+```shell
+method: 'DELETE', url: `${serverURL}/movies/movieList/:listName`
+```
+
+- success returns "list deleted"
+- if no list by that name is found, "list not found," will be returned
+
+```shell
+method: 'PATCH', url: `${serverURL}/movies/movieList/:listName', withCredentials: true
+```
+
+- if the list has not been updated in the past 24 hours, the list will be refreshed based on new information from the external API, the datestamp will be updated and 'list updated' will be returned
+- if the list has been updated in the past 24 hours, "list updated on \<datestamp of update>" will be returned
+- if no list by that name is found, "no list found," will be returned
+
+```shell
+method: 'GET', url: `${serverURL}/movies/filterNames`
+```
+
+- success returns an object {filters: {genreFilters: [\<filter name>, \<filter name>, ...], defaultFilters: [\<filter name>, \<filter name>, ...], timeFilters: [\<filter name>, \<filter name>, ...]}
