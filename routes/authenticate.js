@@ -4,45 +4,81 @@ const router = express.Router();
 const User = require('../models/user');
 const passport = require('passport');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
+const jwt = require('jsonwebtoken');
 
 //----------AUTHENTICATE ROUTER-----------------------
 
 //POST "/authenticate/login"
 //{"username":"Admin", "password":"password"}
 
-router.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err, user) => {
-    if (err) throw err;
-    if (!user) res.send({ message: 'No User Exists' });
-    else {
-      req.logIn(user, (err) => {
-        if (err) throw err;
-        res.send({
-          message: 'Successfully Authenticated',
-          user: { username: req.user.username },
-        });
-      });
+router.post('/login', (req, res) => {
+  // check if username and password are entered
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ msg: 'Please enter a username and a password' });
+  }
+  User.findOne({ username }, async (err, user) => {
+    try {
+      // check for error
+      if (err) {
+        return res
+          .status(400)
+          .json({ msg: 'Sorry something went wrong: ' + err });
+      }
+      // check for existing users
+      if (!user) {
+        return res.status(400).json({ msg: 'User does not exist' });
+      }
+      // validate password
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
+      jwt.sign(
+        { username: username },
+        process.env.JWT_SECRET,
+        { expiresIn: 86400 },
+        (err, token) => {
+          if (err) throw err;
+          res.status(201).json({ token, msg: 'User succesfully logged in' });
+        }
+      );
+    } catch (err) {
+      console.log(err);
     }
-  })(req, res, next);
+  });
 });
 
 router.post('/register', (req, res) => {
-  User.findOne({ username: req.body.username }, async (err, doc) => {
+  // check if username and password are entered
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ msg: 'Please enter a username and a password' });
+  }
+  User.findOne({ username }, async (err, user) => {
     try {
-      if (err) throw err;
-      if (doc) res.send('User Already Exists');
-      if (!doc) {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-        const newUser = new User({
-          username: req.body.username,
-          password: hashedPassword,
-        });
-        await newUser.save();
-        res.send('User Created');
+      // check for error
+      if (err) {
+        return res
+          .status(400)
+          .json({ msg: 'Sorry something went wrong: ' + err });
       }
-    } catch (error) {
-      console.log(error);
+      // check for existing users
+      if (user) {
+        return res.status(400).json({ msg: 'User already exists' });
+      }
+      // create salt & hash
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new User({
+        username,
+        password: hashedPassword,
+      });
+      await newUser.save();
+      return res.status(201).json({ msg: 'User successfully created' });
+    } catch (err) {
+      console.log(err);
     }
   });
 });
