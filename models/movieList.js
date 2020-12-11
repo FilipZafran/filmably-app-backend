@@ -7,22 +7,25 @@ const movieList = new Schema({
     type: String,
     required: true,
   },
+  filterName: { type: String, required: true },
   url: {
     type: String,
     required: true,
   },
   listId: {
     type: String,
-    required: true,
   },
   dateUpdated: {
     type: Date,
     required: true,
-    default: new Date(),
   },
   films: {
     type: Array,
     required: true,
+    default: [],
+  },
+  filterType: {
+    type: String,
   },
 });
 
