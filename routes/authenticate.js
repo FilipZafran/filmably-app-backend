@@ -32,17 +32,20 @@ router.post('/login', (req, res) => {
         return res.status(400).json({ msg: 'User does not exist' });
       }
       // validate password
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
-      jwt.sign(
-        { username: username },
-        process.env.JWT_SECRET,
-        { expiresIn: 86400 },
-        (err, token) => {
-          if (err) throw err;
-          res.status(201).json({ token, msg: 'User succesfully logged in' });
-        }
-      );
+      if (user) {
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch)
+          return res.status(400).json({ msg: 'Invalid credentials' });
+        jwt.sign(
+          { username: username, id: user._id },
+          process.env.JWT_SECRET,
+          { expiresIn: 86400 },
+          (err, token) => {
+            if (err) throw err;
+            res.status(201).json({ token, msg: 'User successfully logged in' });
+          }
+        );
+      }
     } catch (err) {
       console.log(err);
     }
@@ -83,13 +86,8 @@ router.post('/register', (req, res) => {
   });
 });
 
-router.get('/user', (req, res) => {
+router.get('/user', ensureAuthenticated, (req, res) => {
   res.send(req.user);
-});
-
-router.get('/logout', (req, res) => {
-  res.send(req.user.username + ' Logged Out');
-  req.logout();
 });
 
 module.exports = router;
