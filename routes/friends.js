@@ -79,7 +79,7 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
               return x.receiverUserId;
             } else return x.senderUserId;
           });
-          res.send({ friends: friendsArray });
+          res.send({ msg: 'friends list', friends: friendsArray });
         }
       } catch (error) {
         console.log(error);
@@ -147,14 +147,15 @@ router.delete('/removeFriend/:otherUserId', ensureAuthenticated, (req, res) => {
     {
       $or: [
         { senderUserId: req.params.otherUserId, receiverUserId: req.user.id },
-        { senderUserId: req.params.otherUserId, receiverUserId: req.user.id },
+        { senderUserId: req.user.id, receiverUserId: req.params.otherUserId },
       ],
     },
     (err, data) => {
       try {
-        if (err) throw err;
-        if (data) {
-          res.send({ msg: 'friendship removed' });
+        if (err) {
+          throw err;
+        } else {
+          res.send({ msg: 'friendship removed', removed: data });
         }
       } catch (err) {
         console.error('error in unfriend route', err);
