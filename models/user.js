@@ -10,6 +10,7 @@ const user = new Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
     index: true,
   },
 
