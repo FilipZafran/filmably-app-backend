@@ -5,50 +5,44 @@ const Schema = mongoose.Schema;
 //mongoDB automatically generates an _id for every entry we can use this as the userID
 
 const user = new Schema({
-
   // email should have unique: true
 
-	username: {
-		type: String,
-		required: true,
-		index: true
-	},
+  username: {
+    type: String,
+    required: true,
+    index: true,
+  },
 
-	age: {
-		type: String,
-		required: true
-	},
+  age: {
+    type: String,
+  },
 
-	city: {
-		type: String,
-		required: true
-	},
+  city: {
+    type: String,
+  },
 
-	email: {
-		type: String,
-		required: true
-	},
+  email: {
+    type: String,
+  },
 
-	password: {
-		type: String,
-		required: true
-	},
+  password: {
+    type: String,
+    required: true,
+  },
 
-	registeredAt: {
-		type: Date,
-		required: true,
-		default: new Date()
-	},
+  registeredAt: {
+    type: Date,
+    required: true,
+    default: new Date(),
+  },
 
-	lastLoggedIn: {
-		type: Date
-	},
+  lastLoggedIn: {
+    type: Date,
+  },
 
-	picture: {
-		type: String,
-		required: true
-	}
-
+  picture: {
+    type: String,
+  },
 });
 mongoose.set('useCreateIndex', true);
 user.index({ username: 'text' });
