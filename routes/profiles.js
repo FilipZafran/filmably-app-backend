@@ -4,8 +4,8 @@ const User = require('../models/user');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
 //----------SEARCH FRIENDS ROUTE----------
-router.get('/findFriend/:username', ensureAuthenticated, (req, res) => {
-  const username = `/^${req.params.username}/`;
+router.get('/findFriend', ensureAuthenticated, (req, res) => {
+  const username = `/^${req.body.username}/`;
   User.find(
     { $search: { text: { query: username, path: 'username' } } },
     async (err, data) => {
@@ -21,16 +21,32 @@ router.get('/findFriend/:username', ensureAuthenticated, (req, res) => {
   );
 });
 
-//----------OTHER PROFILE DISPLAY ROUTE----------
-router.get('/friendProfile/:otherUserId', ensureAuthenticated, (req, res) => {
-  User.findOne({ _id: req.params.otherUserId }, async (err, data) => {
+//----------GET PROFILE INFORMANTION----------
+
+router.get('/user', ensureAuthenticated, (req, res) => {
+  User.findOne({ _id: req.body.userId }, async (err, data) => {
     try {
       if (err) throw err;
       if (data) {
-        res.send({ msg: 'friend profile', profile: data });
+        res.send({ msg: 'profile found', profile: data });
       }
     } catch (err) {
-      console.error('there is an error in displaying friendProfile: ', err);
+      console.log('there was a problem finding the profile: ', err);
+    }
+  });
+});
+
+//---------------DELETE USER PROFILE ---------------
+
+router.get('/deleteProfile', ensureAuthenticated, (req, res) => {
+  User.deleteOne({ _id: req.user.id }, async (err, data) => {
+    try {
+      if (err) throw err;
+      if (data) {
+        res.send({ msg: 'profile deleted', profile: data });
+      }
+    } catch (err) {
+      console.log('there was a problem deleting the profile: ', err);
     }
   });
 });
