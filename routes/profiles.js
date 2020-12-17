@@ -11,11 +11,14 @@ router.post('/findFriend', ensureAuthenticated, (req, res) => {
     async (err, data) => {
       try {
         if (err) throw err;
-        if (!data) res.send({ msg: 'no users found', users: [] });
-        if (data) {
-          const userId = data.map((x) => x._id);
-          res.send({ msg: 'users found', users: userId });
-        }
+        const users = data.map((x) => {
+          return { id: x._id, username: x.username };
+        });
+
+        res.send({
+          msg: 'users found',
+          users: users,
+        });
       } catch (err) {
         console.error('there is an error in search', err);
       }
@@ -68,7 +71,8 @@ router.patch('/updateUserInfo', ensureAuthenticated, (req, res) => {
 
 //---------------DELETE USER PROFILE ---------------
 
-router.get('/deleteProfile', ensureAuthenticated, (req, res) => {
+//needs to also delete friend requests and likeTrackers
+router.delete('/deleteProfile', ensureAuthenticated, (req, res) => {
   User.deleteOne({ _id: req.user.id }, async (err, data) => {
     try {
       if (err) throw err;

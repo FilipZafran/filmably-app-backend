@@ -3,7 +3,6 @@ const router = express.Router();
 const Friends = require('../models/friends.js');
 const User = require('../models/user');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
-const user = require('../models/user');
 
 //------------TESTING ROUTE---------//
 
@@ -17,10 +16,24 @@ router.get('/invitations', ensureAuthenticated, (req, res) => {
     async (err, data) => {
       try {
         if (err) throw err;
-        const pendingInvitations = data.map((x) => x.senderUserId);
-        res.send({
-          msg: 'pending invitations',
-          pendingInvitations: pendingInvitations,
+        const userIds = data.map((x) => x.senderUserId);
+
+        User.find({ _id: { $in: userIds } }, async (err, doc) => {
+          try {
+            if (err) throw err;
+            const pendingInvitations = doc.map((user) => {
+              return { id: user._id, username: user.username };
+            });
+            res.send({
+              msg: 'pending invitations',
+              pendingInvitations: pendingInvitations,
+            });
+          } catch (err) {
+            console.error(
+              'there was an error in finding invitations profiles',
+              err
+            );
+          }
         });
       } catch (err) {
         console.error('there was an error in finding friendsInvitations', err);
@@ -38,10 +51,24 @@ router.get('/requests', ensureAuthenticated, (req, res) => {
     async (err, data) => {
       try {
         if (err) throw err;
-        const pendingRequests = data.map((x) => x.receiverUserId);
-        res.send({
-          msg: 'pending requests',
-          pendingRequests: pendingRequests,
+        const userIds = data.map((x) => x.receiverUserId);
+
+        User.find({ _id: { $in: userIds } }, async (err, doc) => {
+          try {
+            if (err) throw err;
+            const pendingRequests = doc.map((user) => {
+              return { id: user._id, username: user.username };
+            });
+            res.send({
+              msg: 'pending requests',
+              pendingRequests: pendingRequests,
+            });
+          } catch (err) {
+            console.error(
+              'there was an error in finding request profiles',
+              err
+            );
+          }
         });
       } catch (err) {
         console.error('there was an error in finding friendsRequests', err);
@@ -64,12 +91,28 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
     async (err, doc) => {
       try {
         if (err) throw err;
-        const friendsArray = doc.map((x) => {
+        const userIds = doc.map((x) => {
           if (x.senderUserId === req.user.id) {
             return x.receiverUserId;
           } else return x.senderUserId;
         });
-        res.send({ msg: 'friends list', friends: friendsArray });
+        User.find({ _id: { $in: userIds } }, async (err, doc) => {
+          try {
+            if (err) throw err;
+            const friendsArray = doc.map((user) => {
+              return { id: user._id, username: user.username };
+            });
+            res.send({
+              msg: 'friends list',
+              friends: friendsArray,
+            });
+          } catch (err) {
+            console.error(
+              'there was an error in finding request profiles',
+              err
+            );
+          }
+        });
       } catch (error) {
         console.log(error);
       }
@@ -78,12 +121,12 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
 });
 
 //send friend request
-router.post('/sendRequest/:otherUserId', ensureAuthenticated, (req, res) => {
+router.post('/sendRequest', ensureAuthenticated, (req, res) => {
   Friends.findOne(
     {
       $or: [
-        { senderUserId: req.params.otherUserId, receiverUserId: req.user.id },
-        { senderUserId: req.params.otherUserId, receiverUserId: req.user.id },
+        { senderUserId: req.body.id, receiverUserId: req.user.id },
+        { senderUserId: req.body.id, receiverUserId: req.user.id },
       ],
     },
     async (err, data) => {
@@ -95,14 +138,14 @@ router.post('/sendRequest/:otherUserId', ensureAuthenticated, (req, res) => {
         if (!data) {
           const newRequest = new Friends({
             senderUserId: req.user.id,
-            receiverUserId: req.params.otherUserId,
+            receiverUserId: req.body.id,
             accepted: false,
           });
           await newRequest.save();
           return res.send({ msg: 'request sent' });
         }
       } catch (err) {
-        console.error('there is an error in makeFriendReq: ', err);
+        console.error('there is an error in sendFriendReq: ', err);
       }
     }
   );
@@ -124,7 +167,7 @@ router.patch('/acceptRequest/:otherUserId', ensureAuthenticated, (req, res) => {
           res.send({ senderUserId: req.params.otherUserId, accepted: true });
         }
       } catch (err) {
-        console.error('there is an error in accept route: ', err);
+        console.error('there is an error in acceptFreinedReq: ', err);
       }
     }
   );
