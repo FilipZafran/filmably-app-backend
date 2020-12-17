@@ -4,15 +4,17 @@ const User = require('../models/user');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
 //----------SEARCH FRIENDS ROUTE----------
-router.get('/findFriend', ensureAuthenticated, (req, res) => {
-  const username = `/^${req.body.username}/`;
+router.post('/findFriend', ensureAuthenticated, (req, res) => {
+  const username = new RegExp(`^${req.body.username}`);
   User.find(
-    { $search: { text: { query: username, path: 'username' } } },
+    { username: { $regex: username, $options: 'i' } },
     async (err, data) => {
       try {
         if (err) throw err;
+        if (!data) res.send({ msg: 'no users found', users: [] });
         if (data) {
-          res.send({ msg: 'users found', users: data });
+          const userId = data.map((x) => x._id);
+          res.send({ msg: 'users found', users: userId });
         }
       } catch (err) {
         console.error('there is an error in search', err);
@@ -34,6 +36,34 @@ router.get('/user', ensureAuthenticated, (req, res) => {
       console.log('there was a problem finding the profile: ', err);
     }
   });
+});
+
+//-----------UPDATE PROFILE INFORMATION-------------
+
+router.patch('/updateUserInfo', ensureAuthenticated, (req, res) => {
+  User.findOneAndUpdate(
+    { _id: req.body.userId },
+    {
+      username: body.username,
+      age: body.age,
+      city: body.city,
+      email: body.email,
+    },
+    { useFindAndModify: false },
+    async (err, data) => {
+      try {
+        if (err) throw err;
+        if (data) {
+          res.send({ msg: 'profile updated' });
+        }
+        if (!data) {
+          res.send({ msg: 'no profile found' });
+        }
+      } catch (err) {
+        console.log('there was a problem updating the profile: ', err);
+      }
+    }
+  );
 });
 
 //---------------DELETE USER PROFILE ---------------

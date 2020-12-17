@@ -17,15 +17,11 @@ router.get('/invitations', ensureAuthenticated, (req, res) => {
     async (err, data) => {
       try {
         if (err) throw err;
-        if (!data)
-          res.send({ msg: 'no pending invitations', pendingInvitations: [] });
-        if (data) {
-          const pendingInvitations = data.map((x) => x.senderUserId);
-          res.send({
-            msg: 'pending invitations',
-            pendingInvitations: pendingInvitations,
-          });
-        }
+        const pendingInvitations = data.map((x) => x.senderUserId);
+        res.send({
+          msg: 'pending invitations',
+          pendingInvitations: pendingInvitations,
+        });
       } catch (err) {
         console.error('there was an error in finding friendsInvitations', err);
       }
@@ -42,15 +38,11 @@ router.get('/requests', ensureAuthenticated, (req, res) => {
     async (err, data) => {
       try {
         if (err) throw err;
-        if (!data)
-          res.send({ msg: 'no pending requests', pendingRequests: [] });
-        if (data) {
-          const pendingRequests = data.map((x) => x.receiverUserId);
-          res.send({
-            msg: 'pending requests',
-            pendingRequests: pendingRequests,
-          });
-        }
+        const pendingRequests = data.map((x) => x.receiverUserId);
+        res.send({
+          msg: 'pending requests',
+          pendingRequests: pendingRequests,
+        });
       } catch (err) {
         console.error('there was an error in finding friendsRequests', err);
       }
@@ -72,15 +64,12 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
     async (err, doc) => {
       try {
         if (err) throw err;
-        if (!doc) res.send([]);
-        if (doc) {
-          const friendsArray = doc.map((x) => {
-            if (x.senderUserId === req.user.id) {
-              return x.receiverUserId;
-            } else return x.senderUserId;
-          });
-          res.send({ msg: 'friends list', friends: friendsArray });
-        }
+        const friendsArray = doc.map((x) => {
+          if (x.senderUserId === req.user.id) {
+            return x.receiverUserId;
+          } else return x.senderUserId;
+        });
+        res.send({ msg: 'friends list', friends: friendsArray });
       } catch (error) {
         console.log(error);
       }
