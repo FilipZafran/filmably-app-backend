@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 //mongoDB automatically generates an _id for every entry we can use this as the userID
 
 const user = new Schema({
-  // email should have unique: true
 
   username: {
     type: String,
