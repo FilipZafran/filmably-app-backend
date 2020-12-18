@@ -158,7 +158,7 @@ router.patch('/acceptRequest/:otherUserId', ensureAuthenticated, (req, res) => {
       senderUserId: req.params.otherUserId,
       receiverUserId: req.user.id,
     },
-    { $set: { accepted: true } },
+    { $set: { accepted: true, requestConfirmed: new Date() } },
     { useFindAndModify: false },
     (err, doc) => {
       try {
