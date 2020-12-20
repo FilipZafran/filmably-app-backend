@@ -71,6 +71,7 @@ app.use('/friends', require('./routes/friends'));
 app.use('/movies', require('./routes/movies'));
 app.use('/toSwipe', require('./routes/toSwipe'));
 app.use('/uploads', require('./routes/uploads'));
+app.use('/resetPassword', require('./routes/resetPassword'));
 
 //-----------End of Routes ---------------------------------
 
