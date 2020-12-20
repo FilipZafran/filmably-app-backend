@@ -14,7 +14,6 @@ const jwt = require('jsonwebtoken');
 router.post('/login', (req, res) => {
   // check if username and password are entered
   const { username, password } = req.body;
-  console.log(username, password);
   if (!username || !password) {
     return res
       .status(400)
@@ -84,10 +83,6 @@ router.post('/register', (req, res) => {
       console.log(err);
     }
   });
-});
-
-router.get('/user', ensureAuthenticated, (req, res) => {
-  res.send(req.user);
 });
 
 module.exports = router;
