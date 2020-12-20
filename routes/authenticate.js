@@ -86,8 +86,4 @@ router.post('/register', (req, res) => {
   });
 });
 
-router.get('/user', ensureAuthenticated, (req, res) => {
-  res.send(req.user);
-});
-
 module.exports = router;
