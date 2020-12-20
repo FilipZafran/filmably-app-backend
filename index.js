@@ -6,6 +6,7 @@ const session = require('express-session');
 const express = require('express');
 const dotenv = require('dotenv');
 const fileUpload = require('express-fileupload');
+// const nodemailer = require('nodemailer');
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
