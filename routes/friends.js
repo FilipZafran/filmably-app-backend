@@ -1,258 +1,199 @@
 const express = require('express');
 const router = express.Router();
-const Friends = require('../models/friends.js')
+const Friends = require('../models/friends.js');
 const User = require('../models/user');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
-// var db = require("./models")
-// const resources = {
-//     username: "$username",
-//     data: "$data"
 
-
-// }
-
-//need to add ensureauth
 //------------TESTING ROUTE---------//
-router.get("/getFriendsStatus/:otherUserId", ensureAuthenticated, (req, res) => {
-    Friends.find({ $or: [{ senderUserId: req.user.id, receiverUserId: req.params.otherUserId }, { senderUserId: req.params.otherUserId, receiverUserId: req.user.id }] }, async (err, rs) => {
-        try {
-            let results = rs;
-            if (err) throw err
-            if (rs.length === 0 || rs === null) {
-                res.send({
-                    data: true,
-                    addFriend: true
-                })
-            } else if (results[0]) {
-                if (results[0].accepted === true) {
-                    res.send({
-                        data: true,
-                        unfriend: true
-                    })
-                } else if (results[0].accepted == false) {
-                    if (results[0].receiverUserId == req.user.id) {
-                        res.send({
-                            data: true,
-                            acceptFriendReq: true
-                        })
-                    } else {
-                        res.send({
-                            data: true,
-                            cancelFriendReq: true
-                        })
-                    }
-                }
-            }
-        } catch (err) {
-            console.error("there was an error in finding status", err)
-        }
-    })
-})
 
+//get friend invitations
+router.get('/invitations', ensureAuthenticated, (req, res) => {
+  Friends.find(
+    {
+      receiverUserId: req.user.id,
+      accepted: false,
+    },
+    async (err, data) => {
+      try {
+        if (err) throw err;
+        const userIds = data.map((x) => x.senderUserId);
 
-router.post("/makeFriendRequest/:otherUserId", ensureAuthenticated, (req, res) => {
-    Friends.create(
-        {
-            senderUserId: req.user.id,
-            receiverUserId: req.params.otherUserId,
-        },
-        async (err, rs) => {
-            try {
-                if (err) throw err;
-                if (rs) {
-                    res.send({
-                        data: true
-                    })
-                }
-            } catch (err) {
-                console.error("there is an error in makeFriendReq", err)
-            }
-        }
-    )
-})
-
-
-router.post('/unfriend/:otherUserId', ensureAuthenticated, (req, res) => {
-    Friends.findOneAndDelete(
-        { senderUserId: req.user.id, receiverUserId: req.params.otherUserId },
-        (err, rs) => {
-            try {
-                if (err) throw err
-                if (rs) {
-                    res.send({ data: true })
-                }
-            } catch (err) {
-                console.error("error in unfriend route", err)
-            }
-        })
-})
-
-
-//I think you already fixed this endpoint so you can remove what I did
-//I just needed to get it working so I could create data
-router.post(
-    '/acceptFriendRequest/:otherUserId',
-    ensureAuthenticated,
-    (req, res) => {
-        Friends.findOneAndUpdate(
-            {
-                //I had to switch these two and remove the third parameter because I'm looking
-                //for the entry when the request was RECEIVED by the current user
-                //and SENT by the user in the params
-                senderUserId: req.params.otherUserId,
-                receiverUserId: req.user.id,
-            },
-            //this updates the entry to true
-            { $set: { accepted: true } },
-            { useFindAndModify: false },
-            (err, rs) => {
-                try {
-                    if (err) throw err;
-                    if (rs) {
-                        res.send({ accepted: true });
-                    }
-                } catch (err) {
-                    console.error('there is an error in accept route', err);
-                }
-            }
-        );
+        User.find({ _id: { $in: userIds } }, async (err, doc) => {
+          try {
+            if (err) throw err;
+            const pendingInvitations = doc.map((user) => {
+              return { id: user._id, username: user.username };
+            });
+            res.send({
+              msg: 'pending invitations',
+              pendingInvitations: pendingInvitations,
+            });
+          } catch (err) {
+            console.error(
+              'there was an error in finding invitations profiles',
+              err
+            );
+          }
+        });
+      } catch (err) {
+        console.error('there was an error in finding friendsInvitations', err);
+      }
     }
-);
+  );
+});
+//get friend requests
+router.get('/requests', ensureAuthenticated, (req, res) => {
+  Friends.find(
+    {
+      senderUserId: req.user.id,
+      accepted: false,
+    },
+    async (err, data) => {
+      try {
+        if (err) throw err;
+        const userIds = data.map((x) => x.receiverUserId);
+
+        User.find({ _id: { $in: userIds } }, async (err, doc) => {
+          try {
+            if (err) throw err;
+            const pendingRequests = doc.map((user) => {
+              return { id: user._id, username: user.username };
+            });
+            res.send({
+              msg: 'pending requests',
+              pendingRequests: pendingRequests,
+            });
+          } catch (err) {
+            console.error(
+              'there was an error in finding request profiles',
+              err
+            );
+          }
+        });
+      } catch (err) {
+        console.error('there was an error in finding friendsRequests', err);
+      }
+    }
+  );
+});
 
 //returns an object of the userIds of all the logged in user's friends {friends: [<userId>,<userId>]}
 router.get('/allFriends', ensureAuthenticated, (req, res) => {
-    Friends.find(
+  Friends.find(
+    {
+      $and: [
+        { accepted: true },
         {
-            $and: [
-                { accepted: true },
-                {
-                    $or: [{ senderUserId: req.user.id }, { receiverUserId: req.user.id }],
-                },
-            ],
+          $or: [{ senderUserId: req.user.id }, { receiverUserId: req.user.id }],
         },
-        async (err, doc) => {
-            try {
-                if (err) throw err;
-                if (!doc) res.send([]);
-                if (doc) {
-                    const friendsArray = doc.map((x) => {
-                        if (x.senderUserId === req.user.id) {
-                            return x.receiverUserId;
-                        } else return x.senderUserId;
-                    });
-                    res.send({ friends: friendsArray });
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
-    );
+      ],
+    },
+    async (err, doc) => {
+      try {
+        if (err) throw err;
+        const userIds = doc.map((x) => {
+          if (x.senderUserId === req.user.id) {
+            return x.receiverUserId;
+          } else return x.senderUserId;
+        });
+        User.find({ _id: { $in: userIds } }, async (err, doc) => {
+          try {
+            if (err) throw err;
+            const friendsArray = doc.map((user) => {
+              return { id: user._id, username: user.username };
+            });
+            res.send({
+              msg: 'friends list',
+              friends: friendsArray,
+            });
+          } catch (err) {
+            console.error(
+              'there was an error in finding request profiles',
+              err
+            );
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  );
 });
 
-
-
-
-// router.get('/wannabe', ensureAuthenticated, (req, res) => {
-//     console.log("made it to a route to rerieve data on friends wannabe")
-//     Friends.aggregate([
-
-//         {
-//             $lookup: {
-//                 from: "User",
-//                 localField: "senderUserId",
-//                 foreignField: "_id",
-//                 as: "dataJoin"
-//             }
-
-//         },
-//         {
-//             //     // $group: {
-//             //     //     "senderUserId":
-//             //     // }
-//             $match: { $or: [{ senderUserId: req.user.id }, { receiverUserId: req.user.id }] }
-//         }
-
-//     ],
-
-//         (err, rs) => {
-//             try {
-//                 if (err) throw err
-//                 console.log(rs)
-//                 if (rs) {
-//                     res.send(rs)
-//                 }
-//             } catch (err) {
-//                 console.error("error in rendering friend list", err)
-//             }
-
-//         })
-
-// })
-
-router.get('/wannabe', ensureAuthenticated, (req, res) => {
-    console.log("req.receiverUserId", req.user.id)
-    Friends.find({
-        $or: [{ senderUserId: req.user.id }, { receiverUserId: req.user.id }]
+//send friend request
+router.post('/sendRequest', ensureAuthenticated, (req, res) => {
+  Friends.findOne(
+    {
+      $or: [
+        { senderUserId: req.body.id, receiverUserId: req.user.id },
+        { senderUserId: req.body.id, receiverUserId: req.user.id },
+      ],
     },
-        (err, rs) => {
-            try {
-                if (err) throw err
-                if (rs) {
-                    console.log("rs in wannabe", rs)
-                    res.send(rs)
-                }
-            } catch (err) {
-                console.error("there is an error in wannabe", err)
-            }
-        })
-
-
-})
-
-
-router.post('/accepted/:otherId', (req, res) => {
-    console.log("made it to accept route")
-    console.log("req.params.otherUserId)", req.params)
-    console.log("req.user.id",)
-    Friends.updateOne(
-        {
-            senderUserId: req.params.otherId,
-            receiverUserId: req.user.id,
-            accepted: true
-        }, (err, rs) => {
-            try {
-                if (err) throw err;
-                if (rs) {
-                    res.send({
-                        accepted: true,
-
-                    })
-                }
-
-            } catch (err) {
-                console.error("error in accepting friends", err)
-            }
-        })
-})
-
-
-router.post('/declined/:otherId', ensureAuthenticated, (req, res) => {
-    console.log("made it to route delete from list", req.user)
-    console.log("req.params", req.params)
-
-    Friends.findOneAndDelete({ senderUserId: req.user.id, receiverUserId: req.params.otherId }, (err, rs) => {
-        try {
-            if (err) throw err;
-            if (rs) {
-                console.log("rs in declined", rs)
-            }
-        } catch (err) {
-            console.error("error in deleting from declined", err)
+    async (err, data) => {
+      try {
+        if (err) throw err;
+        if (data) {
+          res.send({ msg: 'request already exists' });
         }
-    })
-})
+        if (!data) {
+          const newRequest = new Friends({
+            senderUserId: req.user.id,
+            receiverUserId: req.body.id,
+            accepted: false,
+          });
+          await newRequest.save();
+          return res.send({ msg: 'request sent' });
+        }
+      } catch (err) {
+        console.error('there is an error in sendFriendReq: ', err);
+      }
+    }
+  );
+});
 
+//accept friend request
+router.patch('/acceptRequest/:otherUserId', ensureAuthenticated, (req, res) => {
+  Friends.findOneAndUpdate(
+    {
+      senderUserId: req.params.otherUserId,
+      receiverUserId: req.user.id,
+    },
+    { $set: { accepted: true, requestConfirmed: new Date() } },
+    { useFindAndModify: false },
+    (err, doc) => {
+      try {
+        if (err) throw err;
+        if (doc) {
+          res.send({ senderUserId: req.params.otherUserId, accepted: true });
+        }
+      } catch (err) {
+        console.error('there is an error in acceptFreinedReq: ', err);
+      }
+    }
+  );
+});
 
-
+//remove friend request or deny friend request or unfriend
+router.delete('/removeFriend/:otherUserId', ensureAuthenticated, (req, res) => {
+  Friends.findOneAndDelete(
+    {
+      $or: [
+        { senderUserId: req.params.otherUserId, receiverUserId: req.user.id },
+        { senderUserId: req.user.id, receiverUserId: req.params.otherUserId },
+      ],
+    },
+    (err, data) => {
+      try {
+        if (err) {
+          throw err;
+        } else {
+          res.send({ msg: 'friendship removed', removed: data });
+        }
+      } catch (err) {
+        console.error('error in unfriend route', err);
+      }
+    }
+  );
+});
 
 module.exports = router;

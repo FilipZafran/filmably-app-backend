@@ -9,8 +9,8 @@ const user = new Schema({
   username: {
     type: String,
     required: true,
-    index: true,
     unique: true,
+    index: true,
   },
 
   age: {
@@ -23,7 +23,7 @@ const user = new Schema({
 
   email: {
     type: String,
-    unique: true,
+    required: true,
   },
 
   password: {
