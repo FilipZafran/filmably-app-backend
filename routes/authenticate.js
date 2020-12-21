@@ -54,11 +54,9 @@ router.post('/login', (req, res) => {
 
 router.post('/register', (req, res) => {
   // check if username and password are entered
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res
-      .status(400)
-      .json({ msg: 'Please enter a username and a password' });
+  const { username, password, email } = req.body;
+  if (!username || !password || !email) {
+    return res.status(400).json({ msg: 'Please fill in all fields!' });
   }
   User.findOne({ username }, async (err, user) => {
     try {
@@ -77,6 +75,7 @@ router.post('/register', (req, res) => {
       const newUser = new User({
         username,
         password: hashedPassword,
+        email,
       });
       await newUser.save();
       return res.status(201).json({ msg: 'User successfully created' });
@@ -84,10 +83,6 @@ router.post('/register', (req, res) => {
       console.log(err);
     }
   });
-});
-
-router.get('/user', ensureAuthenticated, (req, res) => {
-  res.send(req.user);
 });
 
 module.exports = router;
