@@ -53,7 +53,7 @@ router.post('/login', (req, res) => {
 });
 
 router.post('/register', (req, res) => {
-  // check if username and password are entered
+  // check if username and password are ent
   const { username, password } = req.body;
   // email is case insensitive, for further processing I lower the whole email
   const email = req.body.email.toLowerCase();
