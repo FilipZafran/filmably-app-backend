@@ -163,3 +163,19 @@ method: 'GET', url: `${serverURL}/toSwipe`, headers: { 'x-auth-token': localStor
 
 - success returns an array of film objects [\<film>, \<film>, \<film>]
 - failure returns an error message
+
+## Password Reset
+
+```shell
+method: 'POST', url: ${serverURL}/resetPassword/reset, data: {'email': '<email>'}
+```
+
+- user gets an email with a token and a not working link !!!
+- i need a FE route for reset pw, to send a link to the user with the token as parameter in the url
+
+```shell
+method: 'POST', url: ${serverURL}/resetPassword/newPassword, data: {'password': '<password>', 'token': '<token>'}
+```
+
+- password will be the new password
+- the token is sent from the previous route via email

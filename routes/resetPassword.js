@@ -6,8 +6,6 @@ const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-// const { JWT_SECRET } = require('../config/keys');
-// const jwt = require('jsonwebtoken');
 dotenv.config();
 
 const EmailPort = process.env.EmailPort;
@@ -37,7 +35,9 @@ router.post('/reset', (req, res) => {
         }
         if (user) {
           user.resetToken = resetToken;
+          // I want to let this token expire in the future
           user.expireToken = Date.now() + 3600000;
+          user.save();
           const transporter = nodemailer.createTransport({
             host: EmailHost,
             port: EmailPort,
@@ -53,7 +53,7 @@ router.post('/reset', (req, res) => {
             subject: 'Password Reset',
             html: `<h3>Dear ${user.username},</h3>
             <p>You requested for a password reset, kindly use this <a href="{{url}}">link</a> to reset your password</p>
-            <p>${token}</p>
+            <p>${resetToken}</p>
             <br>
             <p>Cheers Filmably!</p>`,
           };
@@ -66,6 +66,35 @@ router.post('/reset', (req, res) => {
         console.log(err);
       }
     });
+  });
+});
+
+router.post('/newPassword', (req, res) => {
+  const newPassword = req.body.password;
+  const resetToken = req.body.token;
+  User.findOne({ resetToken }, async (err, user) => {
+    try {
+      if (err) {
+        return res
+          .status(400)
+          .json({ msg: 'Sorry something went wrong: ' + err });
+      }
+      if (!user) {
+        return res.status(422).json({ msg: 'Try again session expired' });
+      }
+      if (user) {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        user.resetToken = '';
+        user.expireToken = '';
+        user.save();
+        return res
+          .status(200)
+          .json({ message: 'Password updated successfully' });
+      }
+    } catch (err) {
+      console.log(err);
+    }
   });
 });
 

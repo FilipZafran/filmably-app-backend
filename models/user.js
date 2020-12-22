@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 //mongoDB automatically generates an _id for every entry we can use this as the userID
 
 const user = new Schema({
-
   username: {
     type: String,
     required: true,
@@ -42,6 +41,13 @@ const user = new Schema({
   },
 
   picture: {
+    type: String,
+  },
+  // for password reset
+  resetToken: {
+    type: String,
+  },
+  expireToken: {
     type: String,
   },
 });
