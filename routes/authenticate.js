@@ -53,8 +53,10 @@ router.post('/login', (req, res) => {
 });
 
 router.post('/register', (req, res) => {
-  // check if username and password are entered
-  const { username, password, email } = req.body;
+  // check if username and password are ent
+  const { username, password } = req.body;
+  // email is case insensitive, for further processing I lower the whole email
+  const email = req.body.email.toLowerCase();
   if (!username || !password || !email) {
     return res.status(400).json({ msg: 'Please fill in all fields!' });
   }

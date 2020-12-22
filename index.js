@@ -6,6 +6,7 @@ const session = require('express-session');
 const express = require('express');
 const dotenv = require('dotenv');
 const fileUpload = require('express-fileupload');
+// const nodemailer = require('nodemailer');
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
@@ -71,6 +72,7 @@ app.use('/friends', require('./routes/friends'));
 app.use('/movies', require('./routes/movies'));
 app.use('/toSwipe', require('./routes/toSwipe'));
 app.use('/uploads', require('./routes/uploads'));
+app.use('/resetPassword', require('./routes/resetPassword'));
 
 //-----------End of Routes ---------------------------------
 
