@@ -78,6 +78,39 @@ router.post('/register', (req, res) => {
         email,
       });
       await newUser.save();
+
+      //login user after user registered
+      User.findOne({ username }, async (err, user) => {
+        try {
+          // check for error
+          if (err) {
+            return res
+              .status(400)
+              .json({ msg: 'Sorry something went wrong: ' + err });
+          }
+          // check for existing users
+          if (!user) {
+            return res.status(400).json({ msg: 'User does not exist' });
+          }
+          // validate password
+          if (user) {
+            jwt.sign(
+              { username: username, id: user._id },
+              process.env.JWT_SECRET,
+              { expiresIn: 86400 },
+              (err, token) => {
+                if (err) throw err;
+                res
+                  .status(201)
+                  .json({ token, msg: 'User successfully logged in' });
+              }
+            );
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      });
+
       return res.status(201).json({ msg: 'User successfully created' });
     } catch (err) {
       console.log(err);
