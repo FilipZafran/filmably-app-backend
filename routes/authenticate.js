@@ -104,7 +104,10 @@ router.post('/register', (req, res) => {
                 if (err) throw err;
                 res
                   .status(201)
-                  .json({ token, msg: 'User successfully logged in' });
+                  .json({
+                    token,
+                    msg: 'User successfully created and logged in',
+                  });
               }
             );
           }
@@ -112,8 +115,6 @@ router.post('/register', (req, res) => {
           console.log(err);
         }
       });
-
-      return res.status(201).json({ msg: 'User successfully created' });
     } catch (err) {
       console.log(err);
     }
