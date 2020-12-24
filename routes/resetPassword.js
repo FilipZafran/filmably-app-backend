@@ -52,8 +52,9 @@ router.post('/reset', (req, res) => {
             to: email,
             subject: 'Password Reset',
             html: `<h3>Dear ${user.username},</h3>
-            <p>You requested for a password reset, kindly use this <a href="{{url}}">link</a> to reset your password</p>
-            <p>${resetToken}</p>
+            <p>You requested for a password reset, kindly use this 
+            <a href="https://filmably.netlify.app/resetPassword/${resetToken}">LINK</a> 
+            to reset your password</p>
             <br>
             <p>Cheers Filmably!</p>`,
           };
