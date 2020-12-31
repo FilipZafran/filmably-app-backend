@@ -80,7 +80,7 @@ router.post('/register', (req, res) => {
           if (err) {
             return res
               .status(400)
-              .json({ msg: 'Sorry something when wrong: ' + err });
+              .json({ msg: 'Sorry something went wrong: ' + err });
           }
           //check for existing email
           if (user) {
