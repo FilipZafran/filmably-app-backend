@@ -92,7 +92,7 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
       try {
         if (err) throw err;
         const userIds = doc.map((x) => {
-          if (x.senderUserId === req.user.id) {
+          if (x.senderUserId.toString() === req.user.id) {
             return x.receiverUserId;
           } else return x.senderUserId;
         });
