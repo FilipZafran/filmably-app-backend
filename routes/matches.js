@@ -8,7 +8,8 @@ const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 //GET the friends who also like a specific movie
 
 router.get('/oneFilm/:filmId', ensureAuthenticated, (req, res) => {
-  //get a list of all friends
+  const film = req.params.filmId;
+  //fetch a list of all friends
   Friends.find(
     {
       $and: [
@@ -26,13 +27,14 @@ router.get('/oneFilm/:filmId', ensureAuthenticated, (req, res) => {
             return x.receiverUserId;
           } else return x.senderUserId;
         });
-        //find way to filter that likes contains film id
+        //fetch likeTracker for friends and filter for filmId
         LikeTracker.find({ userId: { $in: friendsList } }, async (err, doc) => {
           try {
             if (err) throw err;
             const matchesList = doc.map((x) => {
-              return x.userId;
+              x.likes.includes(film) ? x.userId : null;
             });
+            //fetch username of friends that liked the film
             User.find({ _id: { $in: matchesList } }, async (err, doc) => {
               try {
                 if (err) throw err;
@@ -59,3 +61,5 @@ router.get('/oneFilm/:filmId', ensureAuthenticated, (req, res) => {
 });
 
 //GET a list of all movies liked by friends sorted from most to least likes
+
+router.get('/allFilms', ensureAuthenticated, (req, res) => {});
