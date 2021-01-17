@@ -63,3 +63,5 @@ router.get('/oneFilm/:filmId', ensureAuthenticated, (req, res) => {
 //GET a list of all movies liked by friends sorted from most to least likes
 
 router.get('/allFilms', ensureAuthenticated, (req, res) => {});
+
+module.exports = router;
