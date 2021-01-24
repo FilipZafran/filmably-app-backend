@@ -7,8 +7,9 @@ const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
 //GET the friends who also like a specific movie
 
-router.get('/oneFilm/:filmId', ensureAuthenticated, (req, res) => {
-  const film = req.params.filmId;
+router.post('/oneFilm', ensureAuthenticated, (req, res) => {
+  const film = req.body.film.filmId;
+  const filmObject = req.body.film;
   //fetch a list of all friends
   Friends.find(
     {
@@ -43,6 +44,7 @@ router.get('/oneFilm/:filmId', ensureAuthenticated, (req, res) => {
                 });
                 res.send({
                   msg: 'matches list',
+                  movie: filmObject,
                   matches: fullMatchesArray,
                 });
               } catch (error) {
@@ -62,6 +64,6 @@ router.get('/oneFilm/:filmId', ensureAuthenticated, (req, res) => {
 
 //GET a list of all movies liked by friends sorted from most to least likes
 
-router.get('/allFilms', ensureAuthenticated, (req, res) => {});
+// router.get('/allFilms', ensureAuthenticated, (req, res) => {});
 
 module.exports = router;
