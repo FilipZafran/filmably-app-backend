@@ -10,8 +10,9 @@ module.exports = function fetchMoviesFromList(filter, moviesList) {
         moviesList = [...moviesList, ...doc.films];
         return moviesList;
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
+      return false;
     }
   });
 };

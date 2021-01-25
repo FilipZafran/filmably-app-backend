@@ -21,7 +21,7 @@ const MONGO_PW = process.env.MONGOPW;
 mongoose.connect(
   `mongodb+srv://${MONGO_USER}:${MONGO_PW}@filmably.awjtp.mongodb.net/filmably?retryWrites=true&w=majority`,
   { useNewUrlParser: true, useUnifiedTopology: true },
-  (err, client) => {
+  (err) => {
     if (err) {
       console.log(`Databse err: ${err}`);
     } else {

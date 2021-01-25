@@ -13,9 +13,7 @@ router.post('/findFriend', ensureAuthenticated, (req, res) => {
       try {
         if (err) throw err;
         const users = data
-          .filter((x) => {
-            if (x._id.toString() !== req.user.id) return x;
-          })
+          .filter((x) => x._id.toString() !== req.user.id)
           .map((x) => ({ id: x._id, username: x.username }));
 
         res.send({
@@ -50,10 +48,10 @@ router.patch('/updateUserInfo', ensureAuthenticated, (req, res) => {
   User.findOneAndUpdate(
     { _id: req.body.userId },
     {
-      username: body.username,
-      age: body.age,
-      city: body.city,
-      email: body.email,
+      username: req.body.username,
+      age: req.body.age,
+      city: req.body.city,
+      email: req.body.email,
     },
     { useFindAndModify: false },
     async (err, data) => {

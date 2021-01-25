@@ -1,10 +1,10 @@
-const User = require('./models/user');
 const bcrypt = require('bcryptjs');
-const localStrategy = require('passport-local').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
+const User = require('./models/user');
 
 module.exports = function (passport) {
   passport.use(
-    new localStrategy((username, password, done) => {
+    new LocalStrategy((username, password, done) => {
       User.findOneAndUpdate(
         { username },
         { $set: { lastLoggedIn: new Date() } },

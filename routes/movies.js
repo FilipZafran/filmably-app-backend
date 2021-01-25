@@ -88,19 +88,13 @@ router.get('/filterNames', (req, res) => {
       if (err) throw err;
       if (doc) {
         const timeArray = doc
-          .filter((x) => {
-            if (x.filterType === 'time') return x;
-          })
+          .filter((x) => x.filterType === 'time')
           .map((x) => x.filterName);
         const genreArray = doc
-          .filter((x) => {
-            if (x.filterType === 'genre') return x;
-          })
+          .filter((x) => x.filterType === 'genre')
           .map((x) => x.filterName);
         const defaultArray = doc
-          .filter((x) => {
-            if (x.filterType === 'default') return x;
-          })
+          .filter((x) => x.filterType === 'default')
           .map((x) => x.filterName);
         res.send({
           filters: {

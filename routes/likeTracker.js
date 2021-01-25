@@ -124,7 +124,7 @@ router.delete('/likes', ensureAuthenticated, (req, res) => {
       if (doc) {
         const filterLikes = (likesArray, filmArray) => {
           let index;
-          for (let i = 0; i < filmArray.length; i++) {
+          for (let i = 0; i < filmArray.length; i += 1) {
             index = likesArray.findIndex((x) => x.film.id === filmArray[i].id);
             if (index > -1) {
               likesArray.splice(index, 1);
@@ -177,7 +177,7 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
       if (doc) {
         const filterDislikes = (dislikesArray, filmArray) => {
           let index;
-          for (let i = 0; i < filmArray.length; i++) {
+          for (let i = 0; i < filmArray.length; i += 1) {
             index = dislikesArray.findIndex(
               (x) => x.film.id === filmArray[i].id
             );

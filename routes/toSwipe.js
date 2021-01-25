@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 const LikeTracker = require('../models/likeTracker');
-const Friends = require('../models/friends');
 const MovieList = require('../models/movieList');
 
 // still need to fetch list of friends, fetch movies liked by friends, add movies liked by friends to array
@@ -29,18 +28,12 @@ router.get('/', ensureAuthenticated, (req, res) => {
       // fetch all movies in lists by active filter as well as default filters
       MovieList.find(
         { $or: [{ filterName: { $in: filters } }, { filterType: 'default' }] },
-        async (err, doc) => {
+        async (error, doc) => {
           try {
             if (err) throw err;
             if (!doc) return [];
             if (doc) {
-              const temp = doc.map((x) => x.films);
-              const flatten = (x) => {
-                let result = [];
-                x.map((element) => (result = [...result, ...element]));
-                return result;
-              };
-              const moviesList = flatten(temp);
+              const moviesList = doc[0].films;
 
               // fetch lists of movies liked by friends and add to moviesList
 

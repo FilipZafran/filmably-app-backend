@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // you can use this middleware to ensure the user is authenticated
-const ensureAuthenticated = require('../middleware/ensureAuthenticated');
+// const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
 // upload endpoint
 // the only changes I needed to make in the route itself is using "router" instead of "app" and because the url of the router is "/uploads"
