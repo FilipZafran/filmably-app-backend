@@ -7,7 +7,7 @@ module.exports = function fetchMoviesFromList(filter, moviesList) {
       if (!doc) return [];
       if (doc) {
         console.log('inside');
-        moviesList = [...moviesList, ...doc['films']];
+        moviesList = [...moviesList, ...doc.films];
         return moviesList;
       }
     } catch (err) {

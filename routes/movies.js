@@ -1,8 +1,9 @@
 const express = require('express');
+
 const router = express.Router();
+const axios = require('axios');
 const MovieList = require('../models/movieList');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
-const axios = require('axios');
 
 const apiKey = process.env.IMDB_KEY;
 

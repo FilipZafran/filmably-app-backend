@@ -6,7 +6,7 @@ module.exports = function (passport) {
   passport.use(
     new localStrategy((username, password, done) => {
       User.findOneAndUpdate(
-        { username: username },
+        { username },
         { $set: { lastLoggedIn: new Date() } },
         { useFindAndModify: false },
         (err, user) => {
@@ -16,9 +16,8 @@ module.exports = function (passport) {
             if (err) throw err;
             if (result === true) {
               return done(null, user);
-            } else {
-              return done(null, false);
             }
+            return done(null, false);
           });
         }
       );
@@ -32,7 +31,7 @@ module.exports = function (passport) {
     User.findOne({ _id: id }, (err, user) => {
       const userInformation = {
         username: user.username,
-        id: id,
+        id,
       };
       cb(err, userInformation);
     });

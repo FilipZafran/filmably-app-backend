@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+
 mongoose.set('useCreateIndex', true);
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const friends = new Schema({
   // username: {
@@ -37,7 +38,7 @@ const friends = new Schema({
   },
 
   requestConfirmed: {
-      tyep: Date,
+    tyep: Date,
   },
 
   data: {

@@ -1,12 +1,13 @@
 const express = require('express');
+
 const router = express.Router();
 const Friends = require('../models/friends.js');
 const User = require('../models/user');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
-//------------TESTING ROUTE---------//
+// ------------TESTING ROUTE---------//
 
-//get friend invitations
+// get friend invitations
 router.get('/invitations', ensureAuthenticated, (req, res) => {
   Friends.find(
     {
@@ -21,12 +22,13 @@ router.get('/invitations', ensureAuthenticated, (req, res) => {
         User.find({ _id: { $in: userIds } }, async (err, doc) => {
           try {
             if (err) throw err;
-            const pendingInvitations = doc.map((user) => {
-              return { id: user._id, username: user.username };
-            });
+            const pendingInvitations = doc.map((user) => ({
+              id: user._id,
+              username: user.username,
+            }));
             res.send({
               msg: 'pending invitations',
-              pendingInvitations: pendingInvitations,
+              pendingInvitations,
             });
           } catch (err) {
             console.error(
@@ -41,7 +43,7 @@ router.get('/invitations', ensureAuthenticated, (req, res) => {
     }
   );
 });
-//get friend requests
+// get friend requests
 router.get('/requests', ensureAuthenticated, (req, res) => {
   Friends.find(
     {
@@ -56,12 +58,13 @@ router.get('/requests', ensureAuthenticated, (req, res) => {
         User.find({ _id: { $in: userIds } }, async (err, doc) => {
           try {
             if (err) throw err;
-            const pendingRequests = doc.map((user) => {
-              return { id: user._id, username: user.username };
-            });
+            const pendingRequests = doc.map((user) => ({
+              id: user._id,
+              username: user.username,
+            }));
             res.send({
               msg: 'pending requests',
-              pendingRequests: pendingRequests,
+              pendingRequests,
             });
           } catch (err) {
             console.error(
@@ -77,7 +80,7 @@ router.get('/requests', ensureAuthenticated, (req, res) => {
   );
 });
 
-//returns an object of the userIds of all the logged in user's friends {friends: [<userId>,<userId>]}
+// returns an object of the userIds of all the logged in user's friends {friends: [<userId>,<userId>]}
 router.get('/allFriends', ensureAuthenticated, (req, res) => {
   Friends.find(
     {
@@ -94,14 +97,16 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
         const userIds = doc.map((x) => {
           if (x.senderUserId.toString() === req.user.id) {
             return x.receiverUserId;
-          } else return x.senderUserId;
+          }
+          return x.senderUserId;
         });
         User.find({ _id: { $in: userIds } }, async (err, doc) => {
           try {
             if (err) throw err;
-            const friendsArray = doc.map((user) => {
-              return { id: user._id, username: user.username };
-            });
+            const friendsArray = doc.map((user) => ({
+              id: user._id,
+              username: user.username,
+            }));
             res.send({
               msg: 'friends list',
               friends: friendsArray,
@@ -120,7 +125,7 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
   );
 });
 
-//send friend request
+// send friend request
 router.post('/sendRequest', ensureAuthenticated, (req, res) => {
   Friends.findOne(
     {
@@ -151,7 +156,7 @@ router.post('/sendRequest', ensureAuthenticated, (req, res) => {
   );
 });
 
-//accept friend request
+// accept friend request
 router.patch('/acceptRequest/:otherUserId', ensureAuthenticated, (req, res) => {
   Friends.findOneAndUpdate(
     {
@@ -173,7 +178,7 @@ router.patch('/acceptRequest/:otherUserId', ensureAuthenticated, (req, res) => {
   );
 });
 
-//remove friend request or deny friend request or unfriend
+// remove friend request or deny friend request or unfriend
 router.delete('/removeFriend/:otherUserId', ensureAuthenticated, (req, res) => {
   Friends.findOneAndDelete(
     {

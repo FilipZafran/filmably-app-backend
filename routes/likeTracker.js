@@ -1,9 +1,10 @@
 const express = require('express');
+
 const router = express.Router();
 const LikeTracker = require('../models/likeTracker');
 const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
-//---------LIKETRACKER ROUTER------------------
+// ---------LIKETRACKER ROUTER------------------
 
 router.put('/like', ensureAuthenticated, (req, res) => {
   LikeTracker.findOneAndUpdate(
@@ -17,7 +18,7 @@ router.put('/like', ensureAuthenticated, (req, res) => {
     async (err, doc) => {
       try {
         if (err) throw err;
-        if (doc) res.send(`"${req.body.film['title']}" added to likes`);
+        if (doc) res.send(`"${req.body.film.title}" added to likes`);
         if (!doc) {
           const newLikeTracker = new LikeTracker({
             userId: req.user.id,
@@ -26,7 +27,7 @@ router.put('/like', ensureAuthenticated, (req, res) => {
             filters: {},
           });
           await newLikeTracker.save();
-          res.send(`"${req.body.film['title']}" added to likes`);
+          res.send(`"${req.body.film.title}" added to likes`);
         }
       } catch (error) {
         console.log(error);
@@ -47,7 +48,7 @@ router.put('/dislike', ensureAuthenticated, (req, res) => {
     async (err, doc) => {
       try {
         if (err) throw err;
-        if (doc) res.send(`"${req.body.film['title']}" added to dislikes`);
+        if (doc) res.send(`"${req.body.film.title}" added to dislikes`);
         if (!doc) {
           const newLikeTracker = new LikeTracker({
             userId: req.user.id,
@@ -56,7 +57,7 @@ router.put('/dislike', ensureAuthenticated, (req, res) => {
             filters: {},
           });
           await newLikeTracker.save();
-          res.send(`"${req.body.film['title']}" added to dislikes`);
+          res.send(`"${req.body.film.title}" added to dislikes`);
         }
       } catch (error) {
         console.log(error);
@@ -70,7 +71,7 @@ router.get('/likes', ensureAuthenticated, (req, res) => {
     try {
       if (err) throw err;
       if (doc) {
-        const likesArray = doc['likes'].sort(
+        const likesArray = doc.likes.sort(
           (a, b) => Date.parse(b.date) - Date.parse(a.date)
         );
         res.send({ likes: likesArray });
@@ -87,7 +88,7 @@ router.get('/dislikes', ensureAuthenticated, (req, res) => {
     try {
       if (err) throw err;
       if (doc) {
-        const dislikesArray = doc['dislikes'].sort(
+        const dislikesArray = doc.dislikes.sort(
           (a, b) => Date.parse(b.date) - Date.parse(a.date)
         );
         res.send({ dislikes: dislikesArray });
@@ -104,7 +105,7 @@ router.get('/filters', ensureAuthenticated, (req, res) => {
     try {
       if (err) throw err;
       if (doc) {
-        res.send({ filters: doc['filters'] });
+        res.send({ filters: doc.filters });
       }
       if (!doc) res.send({ filters: {} });
     } catch (err) {
@@ -113,8 +114,8 @@ router.get('/filters', ensureAuthenticated, (req, res) => {
   });
 });
 
-//DELETE "likeTracker/likes"
-//{"films": [{film object}, {film object}, {film object}]}
+// DELETE "likeTracker/likes"
+// {"films": [{film object}, {film object}, {film object}]}
 
 router.delete('/likes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
@@ -124,9 +125,7 @@ router.delete('/likes', ensureAuthenticated, (req, res) => {
         const filterLikes = (likesArray, filmArray) => {
           let index;
           for (let i = 0; i < filmArray.length; i++) {
-            index = likesArray.findIndex(
-              (x) => x.film.id === filmArray[i]['id']
-            );
+            index = likesArray.findIndex((x) => x.film.id === filmArray[i].id);
             if (index > -1) {
               likesArray.splice(index, 1);
             }
@@ -137,9 +136,10 @@ router.delete('/likes', ensureAuthenticated, (req, res) => {
           [...doc.likes],
           [...req.body.films]
         );
-        const datedFilmArray = await req.body.films.map((x) => {
-          return { date: new Date(), film: x };
-        });
+        const datedFilmArray = await req.body.films.map((x) => ({
+          date: new Date(),
+          film: x,
+        }));
         LikeTracker.findOneAndUpdate(
           { userId: req.user.id },
           {
@@ -167,8 +167,8 @@ router.delete('/likes', ensureAuthenticated, (req, res) => {
   });
 });
 
-//DELETE "likeTracker/dislikes"
-//{"films": [{film object}, {film object}, {film object}]}
+// DELETE "likeTracker/dislikes"
+// {"films": [{film object}, {film object}, {film object}]}
 
 router.delete('/dislikes', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
@@ -179,7 +179,7 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
           let index;
           for (let i = 0; i < filmArray.length; i++) {
             index = dislikesArray.findIndex(
-              (x) => x.film.id === filmArray[i]['id']
+              (x) => x.film.id === filmArray[i].id
             );
             if (index > -1) {
               dislikesArray.splice(index, 1);
@@ -191,9 +191,10 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
           [...doc.dislikes],
           [...req.body.films]
         );
-        const datedFilmArray = await req.body.films.map((x) => {
-          return { date: new Date(), film: x };
-        });
+        const datedFilmArray = await req.body.films.map((x) => ({
+          date: new Date(),
+          film: x,
+        }));
         LikeTracker.findOneAndUpdate(
           { userId: req.user.id },
           {
@@ -221,8 +222,8 @@ router.delete('/dislikes', ensureAuthenticated, (req, res) => {
   });
 });
 
-//POST "/likeTracker/filters"
-//{"filters": {filter object}} sets the new filters
+// POST "/likeTracker/filters"
+// {"filters": {filter object}} sets the new filters
 
 router.post('/filters', ensureAuthenticated, (req, res) => {
   LikeTracker.findOneAndUpdate(

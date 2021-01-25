@@ -1,15 +1,16 @@
 const bcrypt = require('bcryptjs');
 const express = require('express');
+
 const router = express.Router();
-const User = require('../models/user');
 const passport = require('passport');
-const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
-//----------AUTHENTICATE ROUTER-----------------------
+// ----------AUTHENTICATE ROUTER-----------------------
 
-//POST "/authenticate/login"
-//{"username":"Admin", "password":"password"}
+// POST "/authenticate/login"
+// {"username":"Admin", "password":"password"}
 
 router.post('/login', (req, res) => {
   // check if username and password are entered
@@ -25,7 +26,7 @@ router.post('/login', (req, res) => {
       if (err) {
         return res
           .status(400)
-          .json({ msg: 'Sorry something went wrong: ' + err });
+          .json({ msg: `Sorry something went wrong: ${err}` });
       }
       // check for existing users
       if (!user) {
@@ -37,7 +38,7 @@ router.post('/login', (req, res) => {
         if (!isMatch)
           return res.status(400).json({ msg: 'Invalid credentials' });
         jwt.sign(
-          { username: username, id: user._id },
+          { username, id: user._id },
           process.env.JWT_SECRET,
           { expiresIn: 86400 },
           (err, token) => {
@@ -66,7 +67,7 @@ router.post('/register', (req, res) => {
       if (err) {
         return res
           .status(400)
-          .json({ msg: 'Sorry something went wrong: ' + err });
+          .json({ msg: `Sorry something went wrong: ${err}` });
       }
       // check for existing users
       if (user) {
@@ -74,15 +75,15 @@ router.post('/register', (req, res) => {
           .status(400)
           .json({ msg: 'Account already exists with this username' });
       }
-      //check for existing email
+      // check for existing email
       User.findOne({ email }, async (err, user) => {
         try {
           if (err) {
             return res
               .status(400)
-              .json({ msg: 'Sorry something went wrong: ' + err });
+              .json({ msg: `Sorry something went wrong: ${err}` });
           }
-          //check for existing email
+          // check for existing email
           if (user) {
             return res
               .status(400)
@@ -98,14 +99,14 @@ router.post('/register', (req, res) => {
           });
           await newUser.save();
 
-          //login user after user registered
+          // login user after user registered
           User.findOne({ username }, async (err, user) => {
             try {
               // check for error
               if (err) {
                 return res
                   .status(400)
-                  .json({ msg: 'Sorry something went wrong: ' + err });
+                  .json({ msg: `Sorry something went wrong: ${err}` });
               }
               // check for existing users
               if (!user) {
@@ -114,7 +115,7 @@ router.post('/register', (req, res) => {
               // validate password
               if (user) {
                 jwt.sign(
-                  { username: username, id: user._id },
+                  { username, id: user._id },
                   process.env.JWT_SECRET,
                   { expiresIn: 86400 },
                   (err, token) => {

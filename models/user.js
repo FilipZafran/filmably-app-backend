@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
-//mongoDB automatically generates an _id for every entry we can use this as the userID
+// mongoDB automatically generates an _id for every entry we can use this as the userID
 
 const user = new Schema({
   username: {

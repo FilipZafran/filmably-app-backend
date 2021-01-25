@@ -1,4 +1,4 @@
-//middleware that ensures the user is authenticated
+// middleware that ensures the user is authenticated
 
 const jwt = require('jsonwebtoken');
 
