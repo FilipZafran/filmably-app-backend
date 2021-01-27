@@ -73,6 +73,7 @@ app.use('/movies', require('./routes/movies'));
 app.use('/toSwipe', require('./routes/toSwipe'));
 app.use('/uploads', require('./routes/uploads'));
 app.use('/resetPassword', require('./routes/resetPassword'));
+app.use('/matches', require('./routes/matches'));
 
 //-----------End of Routes ---------------------------------
 
