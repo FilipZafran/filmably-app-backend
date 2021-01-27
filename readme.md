@@ -179,3 +179,40 @@ method: 'POST', url: ${serverURL}/resetPassword/newPassword, data: {'password': 
 
 - password will be the new password
 - the token is sent from the previous route via email
+
+## Friends
+
+```shell
+method: 'GET', url: ${serverURL}/friends/invitations, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
+
+- success return an object {msg: 'pending invitations', pendingInvitations: [array of pending invitations]}
+- error returns 'there was an error in finding invitations profiles'
+
+```shell
+method: 'GET', url: ${serverURL}/friends/requests, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
+
+```shell
+method: 'GET', url: ${serverURL}/friends/allFriends, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
+
+```shell
+method: 'POST', url: ${serverURL}/friends/sendRequest, data: otherId, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
+
+```shell
+method: 'PATCH', url: ${serverURL}/friends/acceptRequest/:otherUserId,headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
+
+```shell
+method: 'DELETE', url: ${serverURL}/friends/removeFriend/:otherUserId, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
+
+## Profiles
+
+## Matches
+
+```shell
+method: 'POST', url: ${serverURL}/matches/oneFilm, data: {film: {film object}, allFriends: [array of friends names and userIds]}, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
