@@ -1,4 +1,4 @@
-//middleware that ensures the user is authenticated
+// middleware that ensures the user is authenticated
 
 const jwt = require('jsonwebtoken');
 
@@ -14,7 +14,8 @@ module.exports = function ensureAuthenticated(req, res, next) {
     // add user from payload
     req.user = decoded;
     next();
+    return;
   } catch (err) {
-    res.status(400).json({ msg: 'Token is not valid' });
+    return res.status(400).json({ msg: 'Token is not valid' });
   }
 };

@@ -18,7 +18,8 @@ export const fetchAllFriends = () => {
           const friendsArray = doc.map((x) => {
             if (x.senderUserId === req.user.id) {
               return x.receiverUserId;
-            } else return x.senderUserId;
+            }
+            return x.senderUserId;
           });
           return { friends: friendsArray };
         }

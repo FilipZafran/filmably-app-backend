@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node index",
-    "dev": "nodemon index"
+    "dev": "nodemon index",
+    "eslint": "eslint ./ --fix",
+    "prettier": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc.json",
+    "format": "npm run prettier && npm run eslint",
+    "fast-format": "prettier --write $(git diff --name-only HEAD | xargs) --config ./.prettierrc.json && eslint --fix $(git diff --name-only HEAD  **/*.js | xargs)"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +29,11 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.6"
+    "eslint": "^7.18.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "nodemon": "^2.0.6",
+    "prettier": "^2.2.1"
   }
 }

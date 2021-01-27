@@ -12,18 +12,18 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-//-------------------End of Imports----------------------------
+// -------------------End of Imports----------------------------
 
-//the MONGO_USER and MONGO_PW NEED TO BE CHANGED FOR PRODUCTION
+// the MONGO_USER and MONGO_PW NEED TO BE CHANGED FOR PRODUCTION
 const MONGO_USER = process.env.MONGOUSER;
 const MONGO_PW = process.env.MONGOPW;
 
 mongoose.connect(
   `mongodb+srv://${MONGO_USER}:${MONGO_PW}@filmably.awjtp.mongodb.net/filmably?retryWrites=true&w=majority`,
   { useNewUrlParser: true, useUnifiedTopology: true },
-  (err, client) => {
+  (err) => {
     if (err) {
-      console.log('Databse err: ' + err);
+      console.log(`Databse err: ${err}`);
     } else {
       console.log(`${MONGO_USER} Connected To Mongoose`);
     }
@@ -39,14 +39,14 @@ app.use(
   })
 );
 
-//MIDDLEWARE
+// MIDDLEWARE
 
 app.use(express.json());
 
 // File Upload
 app.use(fileUpload());
 
-//THIS SESSION SECRET WILL BE CHANGED FOR PRODUCTION
+// THIS SESSION SECRET WILL BE CHANGED FOR PRODUCTION
 const SESSION_SECRET = process.env.SESSIONSECRET;
 
 app.use(
@@ -62,8 +62,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 require('./passportConfig')(passport);
 
-//-------------End of Middleware ---------------------------
-//ROUTES
+// -------------End of Middleware ---------------------------
+// ROUTES
 
 app.use('/authenticate', require('./routes/authenticate'));
 app.use('/profiles', require('./routes/profiles'));
@@ -75,9 +75,9 @@ app.use('/uploads', require('./routes/uploads'));
 app.use('/resetPassword', require('./routes/resetPassword'));
 app.use('/matches', require('./routes/matches'));
 
-//-----------End of Routes ---------------------------------
+// -----------End of Routes ---------------------------------
 
-//I'n not entirely sure if this is the correct way to disconnect from our database
+// I'n not entirely sure if this is the correct way to disconnect from our database
 process.on('SIGNINT', () => {
   mongoose.connection.close(() => {
     console.log('Mongoose disconnected');

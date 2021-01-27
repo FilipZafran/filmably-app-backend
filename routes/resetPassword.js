@@ -1,24 +1,26 @@
 const express = require('express');
-const User = require('../models/user');
+
 const router = express.Router();
-const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+
+const User = require('../models/user');
+
 dotenv.config();
 
-const EmailPort = process.env.EmailPort;
-const EmailHost = process.env.EmailHost;
-const EmailFilmably = process.env.EmailFilmably;
-const EmailPassword = process.env.EmailPassword;
+const { EmailPort } = process.env;
+const { EmailHost } = process.env;
+const { EmailFilmably } = process.env;
+const { EmailPassword } = process.env;
 
 router.post('/reset', (req, res) => {
   // email is case insensitive
   let email;
   try {
     email = req.body.email.toLowerCase();
-  } catch {
+  } catch (err) {
     return res.status(400).json({ msg: 'Did not receive any email' });
   }
   crypto.randomBytes(32, (err, buffer) => {
@@ -58,7 +60,7 @@ router.post('/reset', (req, res) => {
             <br>
             <p>Cheers Filmably!</p>`,
           };
-          transporter.sendMail(message, function (err, info) {
+          transporter.sendMail(message, (err) => {
             if (err) console.log(err);
           });
           return res.status(200).json({ msg: 'email sent' });
@@ -78,7 +80,7 @@ router.post('/newPassword', (req, res) => {
       if (err) {
         return res
           .status(400)
-          .json({ msg: 'Sorry something went wrong: ' + err });
+          .json({ msg: `Sorry something went wrong: ${err}` });
       }
       if (!user) {
         return res.status(422).json({ msg: 'Try again session expired' });
