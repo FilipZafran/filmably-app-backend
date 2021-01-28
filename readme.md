@@ -227,6 +227,37 @@ method: 'DELETE', url: ${serverURL}/friends/removeFriend/:otherUserId, headers: 
 
 ## Profiles
 
+```shell
+method: 'POST', url: ${serverURL}/profiles/findFriend, data: {username: username}, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
+
+- success returns {msg: 'users found', users: [array of objects {id: userId, username: username}]}
+- error console.error('there is an error in search', err)
+<!-- 
+These routes are not fully tested
+
+```shell
+method: 'GET', url: ${serverURL}/profiles/user, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
+
+- success returns {msg: 'profile found', profile: {user object}}
+- error console.log('there was a problem finding the profile: ', err)
+
+```shell
+method: 'PATCH', url: ${serverURL}/profiles/updateUserInfo, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
+
+- success returns {msg: 'profile updated'}
+- if no profile found returns {msg: 'no profile found}
+- error console.log('there was a problem updating the profile: ', err)
+
+```shell
+method: 'DELETE', url: ${serverURL}/profiles/deleteProfile, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+```
+
+- success returns {msg: 'profile deleted', profile: {profile object}}
+- error console.log('there was a problem deleting the profile: ', err) -->
+
 ## Matches
 
 ```shell
