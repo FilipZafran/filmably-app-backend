@@ -46,7 +46,7 @@ router.get('/user', ensureAuthenticated, (req, res) => {
 
 router.patch('/updateUserInfo', ensureAuthenticated, (req, res) => {
   User.findOneAndUpdate(
-    { _id: req.body.userId },
+    { _id: req.user.id },
     {
       username: req.body.username,
       age: req.body.age,

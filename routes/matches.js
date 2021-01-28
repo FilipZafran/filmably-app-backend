@@ -11,7 +11,7 @@ router.post('/oneFilm', ensureAuthenticated, (req, res) => {
   const film = req.body.film;
   const friendsList = req.body.allFriends;
   const friendIdArray = friendsList.map((x) => x.id);
-  console.log('film: ', film);
+  // console.log('film: ', film);
   // console.log('friendsList: ', friendsList);
   //fetch likeTracker for friends and filter for filmId
   LikeTracker.find({ userId: { $in: friendIdArray } }, async (err, doc) => {
@@ -31,12 +31,12 @@ router.post('/oneFilm', ensureAuthenticated, (req, res) => {
           }
         })
         .filter((x) => x !== 'false');
-      console.log('matchlist: ', matchesList);
+      // console.log('matchlist: ', matchesList);
       //get username from userid
       const matchesListWithNames = matchesList
         .map((match) => friendsList.filter((friend) => friend.id === match))
         .flat();
-      console.log('matchesListWithNames: ', matchesListWithNames);
+      // console.log('matchesListWithNames: ', matchesListWithNames);
       res.send({
         msg: 'matches list',
         movie: film,
