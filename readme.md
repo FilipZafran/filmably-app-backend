@@ -186,33 +186,52 @@ method: 'POST', url: ${serverURL}/resetPassword/newPassword, data: {'password': 
 method: 'GET', url: ${serverURL}/friends/invitations, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
-- success return an object {msg: 'pending invitations', pendingInvitations: [array of pending invitations]}
+- success returns an object {msg: 'pending invitations', pendingInvitations: [array of objects containing id and username of pending invitations]}
 - error returns 'there was an error in finding invitations profiles'
 
 ```shell
 method: 'GET', url: ${serverURL}/friends/requests, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
+- success returns an object {msg: 'pending requests', pendingRequests: [array of objects containing id and username of pending requests]}
+- error returns 'there was an error in finding requests profiles'
+
 ```shell
 method: 'GET', url: ${serverURL}/friends/allFriends, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
+
+- success returns an object {msg: 'friends list', friends: [array of objects containing id and username of all friends]}
+- error returns 'there wan an error in finding friends'
 
 ```shell
 method: 'POST', url: ${serverURL}/friends/sendRequest, data: otherId, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
 
+- success returns an object {msg: 'request sent'}
+- if the logged in user has already sent a friend request an object {msg: 'request already exists'} is returned
+- error console logs ('there is an error in sendFriendReq: ', err)
+
 ```shell
-method: 'PATCH', url: ${serverURL}/friends/acceptRequest/:otherUserId,headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+method: 'PATCH', url: ${serverURL}/friends/acceptRequest/:otherUserId, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
+
+- success returns an object {senderUserId: otherUserId, accepted: true}
+- error console.error('there is an error in acceptFriendReq: ', err)
 
 ```shell
 method: 'DELETE', url: ${serverURL}/friends/removeFriend/:otherUserId, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
+
+- success returns {msg: 'friendship removed', removed: data}
+- error console.error('error in unfriend route', err)
 
 ## Profiles
 
 ## Matches
 
 ```shell
-method: 'POST', url: ${serverURL}/matches/oneFilm, data: {film: {film object}, allFriends: [array of friends names and userIds]}, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
+method: 'POST', url: ${serverURL}/matches/oneFilm, data: {film: {film object}, allFriends: [array of objects {id: friendId, username: friendUsername}]}, headers: { 'x-auth-token': localStorage.getItem('x-auth-token') }
 ```
+
+- success returns {msg: 'matches list', movie: filmObject, matches: [array of objects {id: friendId, username: friendUsername}]}
+- error console.log(error)

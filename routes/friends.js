@@ -112,10 +112,7 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
               friends: friendsArray,
             });
           } catch (err) {
-            console.error(
-              'there was an error in finding request profiles',
-              err
-            );
+            console.error('there was an error in finding friends', err);
           }
         });
       } catch (error) {
