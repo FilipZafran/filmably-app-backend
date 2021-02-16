@@ -32,9 +32,12 @@ router.get('/', ensureAuthenticated, (req, res) => {
             if (err) throw err;
             if (!doc) return [];
             if (doc) {
+              if (doc.length === 0) {
+                return [];
+              }
               const tempMoviesList = doc[0].films;
               const years = timeFilters.map(
-                (x) => parseInt(x.split('').pop().join('')) / 10
+                (x) => parseInt(x.slice(0, -1)) / 10
               );
               const moviesList =
                 years.length > 0
