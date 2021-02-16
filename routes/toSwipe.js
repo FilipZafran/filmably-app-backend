@@ -35,18 +35,13 @@ router.get('/', ensureAuthenticated, (req, res) => {
               if (doc.length === 0) {
                 return [];
               }
-              const tempMoviesList = doc[0].films;
-              const years = timeFilters.map(
-                (x) => parseInt(x.slice(0, -1)) / 10
-              );
-              const moviesList =
-                years.length > 0
-                  ? tempMoviesList.filter(
-                      (x) =>
-                        years.indexOf(Math.floor(parseInt(x['year']) / 10)) !==
-                        -1
-                    )
-                  : tempMoviesList;
+              let moviesList = doc[0].films;
+              const years = timeFilters.map((x) => x.slice(0, -2));
+              if (years.length > 0) {
+                moviesList = moviesList.filter((x) =>
+                  years.includes(x.year.slice(0, -1))
+                );
+              }
 
               // fetch lists of movies liked by friends and add to moviesList
 
