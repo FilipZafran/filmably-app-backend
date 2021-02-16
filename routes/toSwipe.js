@@ -48,8 +48,6 @@ router.get('/', ensureAuthenticated, (req, res) => {
                     )
                   : tempMoviesList;
 
-              console.log(moviesList);
-
               // fetch lists of movies liked by friends and add to moviesList
 
               // remove duplicates
