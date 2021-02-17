@@ -12,9 +12,8 @@ router.get('/', ensureAuthenticated, (req, res) => {
   LikeTracker.findOne({ userId: req.user.id }, async (err, doc) => {
     try {
       if (err) throw err;
-      const filters = doc
-        ? [...doc.filters.genreFilters, ...doc.filters.timeFilters]
-        : [];
+      const genreFilters = doc ? [...doc.filters.genreFilters] : [];
+      const timeFilters = doc ? [...doc.filters.timeFilters] : [];
       const alreadySwiped = doc
         ? [...doc.likes, ...doc.dislikes]
             .map((x) => x.film)
@@ -27,13 +26,22 @@ router.get('/', ensureAuthenticated, (req, res) => {
 
       // fetch all movies in lists by active filter as well as default filters
       MovieList.find(
-        { $or: [{ filterName: { $in: filters } }, { filterType: 'default' }] },
+        { filterName: { $in: genreFilters } },
         async (error, doc) => {
           try {
             if (err) throw err;
             if (!doc) return [];
             if (doc) {
-              const moviesList = doc[0].films;
+              if (doc.length === 0) {
+                return [];
+              }
+              let moviesList = doc[0].films;
+              const years = timeFilters.map((x) => x.slice(0, -2));
+              if (years.length > 0) {
+                moviesList = moviesList.filter((x) =>
+                  years.includes(x.year.slice(0, -1))
+                );
+              }
 
               // fetch lists of movies liked by friends and add to moviesList
 

@@ -87,9 +87,7 @@ router.get('/filterNames', (req, res) => {
     try {
       if (err) throw err;
       if (doc) {
-        const timeArray = doc
-          .filter((x) => x.filterType === 'time')
-          .map((x) => x.filterName);
+        const timeArray = ['2010s', '2000s', '1990s', '1980s', '1970s'];
         const genreArray = doc
           .filter((x) => x.filterType === 'genre')
           .map((x) => x.filterName);
