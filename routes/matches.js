@@ -21,7 +21,7 @@ router.post('/oneFilm', ensureAuthenticated, (req, res) => {
       const matchesList = doc
         .map((userLikeTracker) => {
           const like = userLikeTracker.likes.filter(
-            (x) => x.film.id === film.id
+            (x) => x.film && x.film.id === film.id
           );
           // console.log('like: ', like);
           if (like.length > 0) {
