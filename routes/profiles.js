@@ -42,6 +42,21 @@ router.get('/user', ensureAuthenticated, (req, res) => {
   });
 });
 
+// --------GET LOGGED IN USER INFORMATION------
+
+router.get('/currentUser', ensureAuthenticated, (req, res) => {
+  User.findOne({ _id: req.user.id }, async (err, data) => {
+    try {
+      if (err) throw err;
+      if (data) {
+        res.send({ msg: 'profile found', profile: data });
+      }
+    } catch (err) {
+      console.log('there was a problem finding the profile: ', err);
+    }
+  });
+});
+
 // -----------UPDATE PROFILE INFORMATION-------------
 
 router.patch('/updateUserInfo', ensureAuthenticated, (req, res) => {
