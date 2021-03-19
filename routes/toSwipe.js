@@ -35,7 +35,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
               if (doc.length === 0) {
                 return [];
               }
-              let moviesList = doc[0].films;
+              let moviesList = doc.map(genre => genre.films).flat();
               const years = timeFilters.map((x) => x.slice(0, -2));
               if (years.length > 0) {
                 moviesList = moviesList.filter((x) =>
