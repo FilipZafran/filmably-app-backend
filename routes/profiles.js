@@ -67,6 +67,7 @@ router.patch('/updateUserInfo', ensureAuthenticated, (req, res) => {
       age: req.body.age,
       city: req.body.city,
       email: req.body.email,
+      picture: req.body.picture,
     },
     { useFindAndModify: false },
     async (err, data) => {
