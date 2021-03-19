@@ -25,6 +25,7 @@ router.get('/invitations', ensureAuthenticated, (req, res) => {
             const pendingInvitations = doc.map((user) => ({
               id: user._id,
               username: user.username,
+              color: user.color ? user.color : 'warm',
             }));
             res.send({
               msg: 'pending invitations',
@@ -61,6 +62,7 @@ router.get('/requests', ensureAuthenticated, (req, res) => {
             const pendingRequests = doc.map((user) => ({
               id: user._id,
               username: user.username,
+              color: user.color ? user.color : 'warm',
             }));
             res.send({
               msg: 'pending requests',
@@ -106,6 +108,7 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
             const friendsArray = doc.map((user) => ({
               id: user._id,
               username: user.username,
+              color: user.color ? user.color : 'warm',
             }));
             res.send({
               msg: 'friends list',

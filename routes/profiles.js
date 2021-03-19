@@ -14,7 +14,7 @@ router.post('/findFriend', ensureAuthenticated, (req, res) => {
         if (err) throw err;
         const users = data
           .filter((x) => x._id.toString() !== req.user.id)
-          .map((x) => ({ id: x._id, username: x.username }));
+          .map((x) => ({ id: x._id, username: x.username, color: x.color ? x.color : 'warm' }));
 
         res.send({
           msg: 'users found',
