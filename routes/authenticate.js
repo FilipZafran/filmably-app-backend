@@ -56,6 +56,13 @@ router.post('/register', (req, res) => {
   const { username, password } = req.body;
   // email is case insensitive, for further processing I lower the whole email
   const email = req.body.email.toLowerCase();
+
+  //randomly assign a color to the profile using these name keyed to our css naming conventions
+  const colorOptions = ['prime', 'error', 'success', 'cold', 'warm'];
+  const randomNumber = Math.floor(Math.random() * colorOptions.length);
+  const color = colorOptions[randomNumber];
+
+
   if (!username || !password || !email) {
     return res.status(400).json({ msg: 'Please fill in all fields!' });
   }
@@ -94,6 +101,7 @@ router.post('/register', (req, res) => {
             username,
             password: hashedPassword,
             email,
+            color,
           });
           await newUser.save();
 

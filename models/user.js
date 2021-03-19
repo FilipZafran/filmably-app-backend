@@ -40,6 +40,10 @@ const user = new Schema({
     type: Date,
   },
 
+  color: {
+    type: String,
+  },
+
   picture: {
     type: String,
   },
