@@ -26,7 +26,7 @@ router.get('/invitations', ensureAuthenticated, (req, res) => {
               id: user._id,
               username: user.username,
               color: user.color || 'warm',
-              picture: x.picture || ''
+              picture: user.picture || '',
             })).sort((a, b) => {
               const nameA = a.username.toUpperCase();
               const nameB = b.username.toUpperCase();
