@@ -14,7 +14,17 @@ router.post('/findFriend', ensureAuthenticated, (req, res) => {
         if (err) throw err;
         const users = data
           .filter((x) => x._id.toString() !== req.user.id)
-          .map((x) => ({ id: x._id, username: x.username, color: x.color || 'warm' }));
+          .map((x) => ({ id: x._id, username: x.username, color: x.color || 'warm', picture: x.picture || '' }))
+          .sort((a, b) => {
+            const nameA = a.username.toUpperCase();
+            const nameB = b.username.toUpperCase();
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+          });
 
         res.send({
           msg: 'users found',

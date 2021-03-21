@@ -26,7 +26,17 @@ router.get('/invitations', ensureAuthenticated, (req, res) => {
               id: user._id,
               username: user.username,
               color: user.color || 'warm',
-            }));
+              picture: x.picture || ''
+            })).sort((a, b) => {
+              const nameA = a.username.toUpperCase();
+              const nameB = b.username.toUpperCase();
+              if (nameA < nameB) {
+                return -1;
+              }
+              if (nameA > nameB) {
+                return 1;
+              }
+            });
             res.send({
               msg: 'pending invitations',
               pendingInvitations,
@@ -63,7 +73,17 @@ router.get('/requests', ensureAuthenticated, (req, res) => {
               id: user._id,
               username: user.username,
               color: user.color || 'warm',
-            }));
+              picture: user.picture || '',
+            })).sort((a, b) => {
+              const nameA = a.username.toUpperCase();
+              const nameB = b.username.toUpperCase();
+              if (nameA < nameB) {
+                return -1;
+              }
+              if (nameA > nameB) {
+                return 1;
+              }
+            });
             res.send({
               msg: 'pending requests',
               pendingRequests,
@@ -109,7 +129,17 @@ router.get('/allFriends', ensureAuthenticated, (req, res) => {
               id: user._id,
               username: user.username,
               color: user.color || 'warm',
-            }));
+              picture: user.picture || '',
+            })).sort((a, b) => {
+              const nameA = a.username.toUpperCase();
+              const nameB = b.username.toUpperCase();
+              if (nameA < nameB) {
+                return -1;
+              }
+              if (nameA > nameB) {
+                return 1;
+              }
+            });
             res.send({
               msg: 'friends list',
               friends: friendsArray,
